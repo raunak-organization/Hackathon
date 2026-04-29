@@ -1,4 +1,3 @@
-// lib/client.ts
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 interface AuthResponse {

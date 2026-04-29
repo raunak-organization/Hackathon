@@ -22,3 +22,9 @@ export interface RegisterPayload {
   email: string;
   password: string;
 }
+export interface AuthState {
+  user: User | null;
+  accessToken: string | null;
+  loading: boolean;
+  error: string | null;
+}
