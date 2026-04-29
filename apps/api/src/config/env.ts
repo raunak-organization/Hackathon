@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { NotFoundError } from '../utils/appError';
+import { NotFoundError } from '../utils/appError.js';
 
 const getEnv = (key: keyof NodeJS.ProcessEnv) => {
   const value = process.env[key];
@@ -14,4 +14,6 @@ export const env = {
   PORT: Number(getEnv('PORT')),
   LOG_LEVEL: process.env.LOG_LEVEL,
   NODE_ENV: process.env.NODE_ENV,
+  JWT_SECRET: getEnv('JWT_SECRET'),
+  MONGO_URI: getEnv('MONGO_URI'),
 };
