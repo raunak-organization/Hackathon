@@ -1,6 +1,6 @@
 import crypto from 'crypto';
-import { RegisterUserInput } from '@repo/zod-config';
-import { ConflictError } from '../../utils/appError.js';
+import { LoginUserInput, RegisterUserInput } from '@repo/zod-config';
+import { ConflictError, UnauthorizedError } from '../../utils/appError.js';
 import { userService } from '../user/user.service.js';
 import { tokenService } from '../token/token.service.js';
 
@@ -27,6 +27,26 @@ export const authService = {
       accessToken,
       refreshToken,
       user,
+    };
+  },
+
+  loginUser: async (data: LoginUserInput) => {
+    const { email, password } = data;
+
+    const user = await userService.findUserByEmail(email);
+
+    if (!user) throw new UnauthorizedError('Invalid credentials');
+
+    const isPasswordValid = await user.comparePassword(password);
+
+    if (!isPasswordValid) throw new UnauthorizedError('Invalid credentials');
+
+    const refreshToken = crypto.randomBytes(40).toString('hex');
+    const accessToken = tokenService.generateAccessToken(user._id);
+
+    return {
+      accessToken,
+      refreshToken,
     };
   },
 };
