@@ -5,11 +5,13 @@ import mongoose, { HydratedDocument, Model, Schema, Types } from 'mongoose';
 
 export enum TokenType {
   PASSWORD_RESET = 'password_reset',
+  REFRESH = 'refresh',
 }
 
 // ─── Expiry ─────────────────────────────────────────────
 const TOKEN_EXPIRY_MS: Record<TokenType, number> = {
   [TokenType.PASSWORD_RESET]: 15 * 60 * 1000,
+  [TokenType.REFRESH]: 30 * 24 * 60 * 60 * 1000,
 };
 
 // ─── Interfaces ─────────────────────────────────────────
@@ -81,8 +83,8 @@ const tokenSchema = new Schema<IToken, ITokenStatics, ITokenMethods>(
 
 // ─── Indexes ────────────────────────────────────────────
 tokenSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
-tokenSchema.index({ userId: 1, type: 1 });
-tokenSchema.index({ tokenHash: 1, type: 1 });
+tokenSchema.index({ userId: 1, type: 1, isUsed: 1 });
+tokenSchema.index({ tokenHash: 1, type: 1 }, { unique: true });
 
 // ─── Methods ────────────────────────────────────────────
 tokenSchema.methods.isValid = function (): boolean {
@@ -113,13 +115,17 @@ tokenSchema.statics.generateToken = async function (
   return { token, rawValue };
 };
 
-tokenSchema.statics.findByRawValue = function (
+tokenSchema.statics.findByRawValue = async function (
   rawValue: string,
   type: TokenType,
 ) {
   const tokenHash = crypto.createHash('sha256').update(rawValue).digest('hex');
+  const token = await this.findOne({ tokenHash, type, isUsed: false }).select(
+    '+tokenHash',
+  );
 
-  return this.findOne({ tokenHash, type, isUsed: false }).select('+tokenHash');
+  if (!token || !token.isValid()) return null;
+  return token;
 };
 
 // ─── Model ──────────────────────────────────────────────
