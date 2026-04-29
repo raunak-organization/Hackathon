@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import userModel, { IUser } from './user.model.js';
 
 export const userService = {
@@ -7,5 +8,9 @@ export const userService = {
 
   async createUser(data: Partial<IUser>) {
     return await userModel.create(data);
+  },
+
+  async findById(userId: string) {
+    return userModel.findById(new Types.ObjectId(userId));
   },
 };
