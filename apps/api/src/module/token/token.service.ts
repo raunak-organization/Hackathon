@@ -2,6 +2,7 @@ import { Types } from 'mongoose';
 import tokenModel, { TokenDocument, TokenType } from './token.model.js';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { env } from '../../config/env.js';
+import { UnauthorizedError } from '../../utils/appError.js';
 
 const ACCESS_TOKEN_EXPIRY = '15m';
 
@@ -16,7 +17,7 @@ export const tokenService = {
     const decoded = jwt.verify(rawToken, env.JWT_SECRET);
 
     if (typeof decoded === 'string') {
-      throw new Error('Invalid token.');
+      throw new UnauthorizedError('Invalid token.');
     }
 
     return decoded;
