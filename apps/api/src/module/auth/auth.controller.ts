@@ -8,6 +8,9 @@ import {
   registerUserSchema,
 } from '@repo/zod-config';
 import { env } from '../../config/env.js';
+import { AuthRequest } from '../../middlewares/auth.middleware.js';
+import { UnauthorizedError } from '../../utils/appError.js';
+import { userService } from '../user/user.service.js';
 
 // ------ Register user -----------------------
 export const registerUser = asyncHandler(
@@ -56,5 +59,20 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
     data: {
       accessToken,
     },
+  });
+});
+
+// ------ Get User -----------------------
+export const getMe = asyncHandler(async (req: AuthRequest, res: Response) => {
+  if (!req.userId) {
+    throw new UnauthorizedError('Unauthorized');
+  }
+
+  const user = await userService.findById(req.userId);
+  if (!user) throw new UnauthorizedError('Invalid Credentials.');
+
+  res.status(200).json({
+    success: true,
+    data: user,
   });
 });
