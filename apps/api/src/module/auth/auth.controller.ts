@@ -10,6 +10,8 @@ import {
 import { UnauthorizedError } from '../../utils/appError.js';
 import { userService } from '../user/user.service.js';
 import { env } from 'node:process';
+import { tokenService } from '../token/token.service.js';
+import { TokenType } from '../token/token.model.js';
 
 export interface CookieRequest extends Request {
   cookies: {
@@ -97,6 +99,36 @@ export const refresh = asyncHandler(
       data: {
         accessToken,
       },
+    });
+  },
+);
+
+// ------ Logout user -----------------------
+export const logout = asyncHandler(
+  async (req: CookieRequest, res: Response) => {
+    const rawToken = req.cookies.refreshToken;
+
+    if (!rawToken) throw new UnauthorizedError('Unauthorized');
+
+    const tokenDoc = await tokenService.findValidToken(
+      rawToken,
+      TokenType.REFRESH,
+    );
+    if (!tokenDoc)
+      throw new UnauthorizedError('Invalid or expired refresh token');
+
+    await tokenService.markUsed(tokenDoc);
+
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: env.NODE_ENV === 'production',
+      sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/',
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Logged Out Successfully.',
     });
   },
 );
