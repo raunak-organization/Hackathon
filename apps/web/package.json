@@ -12,6 +12,10 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
+    "@repo/logger": "workspace:^",
+    "@repo/zod-config": "workspace:^",
+    "@tanstack/react-query": "^5.100.6",
+    "@tanstack/react-query-devtools": "^5.100.6",
     "axios": "^1.15.2",
     "next": "16.2.0",
     "react": "^19.2.0",
