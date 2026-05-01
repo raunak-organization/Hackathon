@@ -1,17 +1,10 @@
-import { configureStore, type EnhancedStore } from '@reduxjs/toolkit';
-import authReducer from '@/features/auth/state/auth.slice';
+import { configureStore } from '@reduxjs/toolkit';
+import authReducer from '@/features/auth/states/auth.slice';
+import deploymentReducer from '@/features/deployment/states/deployment.slice';
 
-export const store: EnhancedStore<{
-  auth: {
-    isAuthenticated: boolean;
-    user: {
-      id: string;
-      name: string;
-      email: string;
-    } | null;
-  };
-}> = configureStore({
+export const store = configureStore({
   reducer: {
     auth: authReducer,
+    deployment: deploymentReducer,
   },
 });
