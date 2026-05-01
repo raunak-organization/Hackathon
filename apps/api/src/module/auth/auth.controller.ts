@@ -9,9 +9,11 @@ import {
 } from '@repo/zod-config';
 import { UnauthorizedError } from '../../utils/appError.js';
 import { userService } from '../user/user.service.js';
-import { env } from 'node:process';
+// import { env } from 'node:process';
+import { env } from '../../config/env.js';
 import { tokenService } from '../token/token.service.js';
 import { TokenType } from '../token/token.model.js';
+import { UserDocument } from '../user/user.model.js';
 
 export interface CookieRequest extends Request {
   cookies: {
@@ -130,5 +132,25 @@ export const logout = asyncHandler(
       success: true,
       message: 'Logged Out Successfully.',
     });
+  },
+);
+
+export const githubCallback = asyncHandler(
+  async (req: Request, res: Response) => {
+    const user = req.user as UserDocument;
+
+    if (!user) {
+      return res.redirect(`${env.FRONTEND_URL}/login?error=auth_failed`);
+    }
+
+    // Generate tokens using the new service method
+    const { accessToken, refreshToken } =
+      await authService.generateTokensForOAuth(user);
+
+    // Set the refresh token in the HTTP-only cookie
+    res.cookie('refreshToken', refreshToken, cookieOptions);
+
+    // Redirect to the frontend homepage, passing the access token in the URL!
+    res.redirect(`${env.FRONTEND_URL}/?token=${accessToken}`);
   },
 );
