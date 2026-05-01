@@ -4,6 +4,7 @@ import { ConflictError, UnauthorizedError } from '../../utils/appError.js';
 import { userService } from '../user/user.service.js';
 import { tokenService } from '../token/token.service.js';
 import tokenModel, { TokenType } from '../token/token.model.js';
+import { UserDocument } from '../user/user.model.js';
 
 export const authService = {
   // ------ Register user -----------------------
@@ -49,6 +50,25 @@ export const authService = {
     if (!isPasswordValid) throw new UnauthorizedError('Invalid credentials');
 
     const refreshToken = crypto.randomBytes(40).toString('hex');
+    const accessToken = tokenService.generateAccessToken(user._id);
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    };
+  },
+  // ------ GitHub OAuth Tokens -----------------------
+  generateTokensForOAuth: async (user: UserDocument) => {
+    const { rawValue: refreshToken } = await tokenModel.generateToken(
+      user._id,
+      TokenType.REFRESH,
+    );
+
     const accessToken = tokenService.generateAccessToken(user._id);
 
     return {

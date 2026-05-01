@@ -16,3 +16,5 @@
 {"level":30,"time":"2026-04-29T18:26:49.479Z","service":"backend","env":"development","msg":"MongoDB connected"}
 {"level":30,"time":"2026-04-29T18:26:49.490Z","service":"backend","env":"development","msg":"Server running on port 4000"}
 {"level":50,"time":"2026-04-29T18:26:51.691Z","service":"backend","env":"development","message":"Invalid credentials","stack":"Error: Invalid credentials\n    at Object.loginUser (/home/raunak/Documents/Projects/Hackathon/apps/api/src/module/auth/auth.service.ts:42:33)\n    at async <anonymous> (/home/raunak/Documents/Projects/Hackathon/apps/api/src/module/auth/auth.controller.ts:47:41)","path":"/api/auth/login","method":"POST","msg":"AppError occurred"}
+{"level":30,"time":"2026-05-01T19:19:09.755Z","service":"backend","env":"development","msg":"MongoDB connected"}
+{"level":30,"time":"2026-05-01T19:19:09.768Z","service":"backend","env":"development","msg":"Server running on port 4000"}
