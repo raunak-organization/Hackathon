@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import { register } from '@/features/auth/services/auth.api';
 import { setAccessToken } from '@/lib/client';
-import { setAuth } from '@/features/auth/state/auth.slice';
+import { setAuth } from '@/features/auth/states/auth.slice';
 import logger from '@/lib/logger';
 import { AuthResponse } from '../type';
 import { useRouter } from 'next/navigation';
