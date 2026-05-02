@@ -6,12 +6,14 @@ import mongoose, { HydratedDocument, Model, Schema, Types } from 'mongoose';
 export enum TokenType {
   PASSWORD_RESET = 'password_reset',
   REFRESH = 'refresh',
+  UPDATE_EMAIL = 'update_email',
 }
 
 // ─── Expiry ─────────────────────────────────────────────
 const TOKEN_EXPIRY_MS: Record<TokenType, number> = {
   [TokenType.PASSWORD_RESET]: 15 * 60 * 1000,
   [TokenType.REFRESH]: 30 * 24 * 60 * 60 * 1000,
+  [TokenType.UPDATE_EMAIL]: 15 * 60 * 1000,
 };
 
 // ─── Interfaces ─────────────────────────────────────────

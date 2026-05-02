@@ -9,8 +9,9 @@ const SALT_ROUNDS = 12;
 export interface IUser {
   name: string;
   email: string;
-  passwordHash?: string;
+  passwordHash: string;
   githubId?: string;
+  pendingEmail?: string;
 }
 
 export interface IUserMethods {
@@ -33,6 +34,10 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
       required: [true, 'Email is required.'],
       trim: true,
       match: [EMAIL_REGEX, 'Email must be a valid email.'],
+    },
+    pendingEmail: {
+      type: String,
+      trim: true,
     },
     passwordHash: {
       type: String,
