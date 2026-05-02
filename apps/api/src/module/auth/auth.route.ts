@@ -1,4 +1,4 @@
-import { Router, RequestHandler } from 'express';
+import { Router } from 'express';
 import {
   getMe,
   loginUser,
@@ -6,10 +6,9 @@ import {
   refresh,
   registerUser,
   githubCallback,
+  getGithubLoginPage,
 } from './auth.controller.js';
 import authMiddleware from '../../middlewares/auth.middleware.js';
-import passport from 'passport';
-import { env } from '../../config/env.js';
 
 const authRouter = Router();
 
@@ -23,20 +22,7 @@ authRouter.post('/refresh', refresh);
 
 authRouter.post('/logout', logout);
 
-authRouter.get(
-  '/github',
-  passport.authenticate('github', {
-    scope: ['user:email'],
-    session: false,
-  }) as RequestHandler,
-);
-authRouter.get(
-  '/github/callback',
-  passport.authenticate('github', {
-    session: false,
-    failureRedirect: `${env.FRONTEND_URL}/login?error=github_failed`,
-  }) as RequestHandler,
-  githubCallback,
-);
+authRouter.get('/github', getGithubLoginPage);
+authRouter.get('/github/callback', githubCallback);
 
 export default authRouter;
