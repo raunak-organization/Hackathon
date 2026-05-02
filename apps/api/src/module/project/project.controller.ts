@@ -1,21 +1,17 @@
 import { Request, Response } from 'express';
 import { asyncHandler } from '../../utils/asyncHandler.js';
 import { projectService } from './project.service.js';
-import { UnauthorizedError } from '../../utils/appError.js';
 import { CreateProjectInput, createProjectSchema } from '@repo/zod-config';
+import { getUserId } from '../../utils/getUserId.js';
 
 export const createProject = asyncHandler(
   async (req: Request, res: Response) => {
-    if (!req.userId) throw new UnauthorizedError('Unauthorized');
+    const userId = getUserId(req);
 
     const { name, repoUrl }: CreateProjectInput =
       await createProjectSchema.parseAsync(req.body);
 
-    const project = await projectService.createProject(
-      req.userId,
-      name,
-      repoUrl,
-    );
+    const project = await projectService.createProject(userId, name, repoUrl);
 
     res.status(201).json({
       success: true,
@@ -26,8 +22,7 @@ export const createProject = asyncHandler(
 );
 
 export const getProjects = asyncHandler(async (req: Request, res: Response) => {
-  const userId = req.userId;
-  if (!userId) throw new UnauthorizedError('Unauthorized');
+  const userId = getUserId(req);
 
   const projects = await projectService.getUserProjects(userId);
 
@@ -40,14 +35,13 @@ export const getProjects = asyncHandler(async (req: Request, res: Response) => {
 
 export const getProjectDeployments = asyncHandler(
   async (req: Request, res: Response) => {
-    const userId = req.userId;
-    if (!userId) throw new UnauthorizedError('Unauthorized');
+    const userId = getUserId(req);
 
     const projectId = req.params.projectId as string;
 
     const deployments = await projectService.getProjectDeployments(
       projectId,
-      req.userId,
+      userId,
     );
 
     res.status(200).json({
