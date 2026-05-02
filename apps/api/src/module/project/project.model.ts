@@ -4,6 +4,7 @@ export interface IProject {
   _id: Types.ObjectId;
   userId: Types.ObjectId;
   name: string;
+  repoUrl: string;
   currentDeploymentId?: Types.ObjectId;
   createdAt: Date;
 }
@@ -13,11 +14,16 @@ const projectSchema = new Schema<IProject>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: [true, 'User Id is required.'],
     },
     name: {
       type: String,
-      required: true,
+      required: [true, 'Name is required.'],
+      trim: true,
+    },
+    repoUrl: {
+      type: String,
+      required: [true, 'Repository URL is required.'],
       trim: true,
     },
     currentDeploymentId: {

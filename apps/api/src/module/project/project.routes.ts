@@ -8,5 +8,6 @@ projectRouter.use(authMiddleware);
 
 projectRouter.post('/', createProject);
 projectRouter.get('/', getProjects);
+projectRouter.get('/:projectId/deployments', getProjects);
 
 export default projectRouter;
