@@ -9,15 +9,17 @@ import {
 } from '@repo/zod-config';
 import { UnauthorizedError } from '../../utils/appError.js';
 import { userService } from '../user/user.service.js';
-// import { env } from 'node:process';
 import { env } from '../../config/env.js';
 import { tokenService } from '../token/token.service.js';
 import { TokenType } from '../token/token.model.js';
-import { UserDocument } from '../user/user.model.js';
+import { generateState } from 'arctic';
+import { github } from '../../github/github.js';
+import { githubOAuthService } from '../../github/github.service.js';
 
 export interface CookieRequest extends Request {
   cookies: {
     refreshToken?: string;
+    github_oauth_state?: string;
   };
 }
 
@@ -87,7 +89,6 @@ export const getMe = asyncHandler(async (req: Request, res: Response) => {
 export const refresh = asyncHandler(
   async (req: CookieRequest, res: Response) => {
     const rawToken = req.cookies.refreshToken;
-
     if (!rawToken) throw new UnauthorizedError('Unauthorized');
 
     const { accessToken, refreshToken: newRefreshToken } =
@@ -109,7 +110,6 @@ export const refresh = asyncHandler(
 export const logout = asyncHandler(
   async (req: CookieRequest, res: Response) => {
     const rawToken = req.cookies.refreshToken;
-
     if (!rawToken) throw new UnauthorizedError('Unauthorized');
 
     const tokenDoc = await tokenService.findValidToken(
@@ -135,22 +135,40 @@ export const logout = asyncHandler(
   },
 );
 
+// ------ Github Login -----------------------
+export const getGithubLoginPage = asyncHandler(
+  (req: Request, res: Response) => {
+    const state = generateState();
+    const url = github.createAuthorizationURL(state, ['user:email']);
+
+    res.cookie('github_oauth_state', state, {
+      httpOnly: true,
+      secure: env.NODE_ENV === 'production',
+      sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax',
+    });
+
+    res.redirect(url.toString());
+  },
+);
+
 export const githubCallback = asyncHandler(
   async (req: Request, res: Response) => {
-    const user = req.user as UserDocument;
+    const { code, state } = req.query;
+    const { github_oauth_state: storedState } = req.cookies;
 
-    if (!user) {
-      return res.redirect(`${env.FRONTEND_URL}/login?error=auth_failed`);
+    if (!code || !state || state !== storedState) {
+      return res.redirect(`${env.FRONTEND_URL}/login?error=invalid_oauth`);
     }
 
-    // Generate tokens using the new service method
     const { accessToken, refreshToken } =
-      await authService.generateTokensForOAuth(user);
+      await githubOAuthService.loginWithGithub(code as string);
 
-    // Set the refresh token in the HTTP-only cookie
-    res.cookie('refreshToken', refreshToken, cookieOptions);
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      secure: env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
 
-    // Redirect to the frontend homepage, passing the access token in the URL!
     res.redirect(`${env.FRONTEND_URL}/?token=${accessToken}`);
   },
 );
