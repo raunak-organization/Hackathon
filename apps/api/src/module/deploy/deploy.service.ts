@@ -49,6 +49,43 @@ export const deployService = {
     return deployment;
   },
 
+  async getAllDeployment(userId: string) {
+    const deployments = await deployModel
+      .find({ userId })
+      .populate('projectId', 'name repoUrl')
+      .sort({ createdAt: -1 });
+
+    return deployments;
+  },
+
+  async getDeploymentById(deploymentId: string, userId: string) {
+    const deployment = await deployModel
+      .findOne({
+        _id: deploymentId,
+        userId,
+      })
+      .populate('projectId', 'name repoUrl currentDeploymentId');
+
+    if (!deployment) {
+      throw new NotFoundError('Deployment not found');
+    }
+
+    return deployment;
+  },
+
+  async getDeploymentLogs(deploymentId: string, userId: string) {
+    const deployment = await deployModel.findOne({
+      _id: deploymentId,
+      userId,
+    });
+
+    if (!deployment) {
+      throw new NotFoundError('Deployment not found');
+    }
+
+    return deployment.logs;
+  },
+
   async rollback(deploymentId: string, userId: string) {
     const deployment = await deployModel.findOne({
       _id: deploymentId,
@@ -70,12 +107,11 @@ export const deployService = {
       throw new NotFoundError('No previous successful deployment');
     }
 
-    // trigger new deployment using old config
-    return this.createDeployment(
-      userId,
-      previous.projectId.toString(),
-      previous.env,
-    );
+    await projectModel.findByIdAndUpdate(deployment.projectId, {
+      currentDeploymentId: previous._id,
+    });
+
+    return previous;
   },
 
   async staticDeployment(deploymentId: string, requestedPath: string) {

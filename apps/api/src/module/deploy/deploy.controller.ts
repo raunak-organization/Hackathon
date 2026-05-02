@@ -2,15 +2,12 @@ import { Request, Response } from 'express';
 import fs from 'node:fs';
 import { asyncHandler } from '../../utils/asyncHandler.js';
 import { deployService } from './deploy.service.js';
-import { UnauthorizedError } from '../../utils/appError.js';
 import { CreateDeployInput, createDeploySchema } from '@repo/zod-config';
+import { getUserId } from '../../utils/getUserId.js';
 
 export const createDeployment = asyncHandler(
   async (req: Request, res: Response) => {
-    const userId = req.userId;
-    if (!userId) {
-      throw new UnauthorizedError('Unauthorized');
-    }
+    const userId = getUserId(req);
 
     const { projectId, env }: CreateDeployInput =
       await createDeploySchema.parseAsync(req.body);
@@ -28,10 +25,54 @@ export const createDeployment = asyncHandler(
   },
 );
 
+export const getAllDeployment = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = getUserId(req);
+
+    const deployments = await deployService.getAllDeployment(userId);
+
+    res.json({
+      success: true,
+      deployments,
+    });
+  },
+);
+
+export const getDeploymentById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = getUserId(req);
+
+    const deployment = await deployService.getDeploymentById(
+      req.params.id as string,
+      userId,
+    );
+
+    res.status(200).json({
+      success: true,
+      deployment,
+    });
+  },
+);
+
+export const getDeploymentLogs = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = getUserId(req);
+
+    const logs = await deployService.getDeploymentLogs(
+      req.params.id as string,
+      userId,
+    );
+
+    res.status(200).json({
+      success: true,
+      logs,
+    });
+  },
+);
+
 export const rollbackDeployment = asyncHandler(
   async (req: Request, res: Response) => {
-    const userId = req.userId;
-    if (!userId) throw new UnauthorizedError('Unauthorized');
+    const userId = getUserId(req);
 
     const deployment = await deployService.rollback(
       req.params.id as string,
@@ -39,6 +80,7 @@ export const rollbackDeployment = asyncHandler(
     );
 
     res.json({
+      success: true,
       message: 'Rollback triggered',
       deployment,
     });
@@ -68,10 +110,13 @@ export const StaticDeployment = asyncHandler(
     let html = fs.readFileSync(result.filePath, 'utf-8');
 
     html = html
-      .replace(/src="\/assets\//g, `src="/api/deploy/${id as string}/assets/`)
       .replace(
-        /href="\/assets\//g,
-        `href="/api/deploy/${id as string}/assets/`,
+        /(src|href)=["']\/assets\/(.*?)["']/g,
+        `$1="/api/deploy/${id as string}/assets/$2"`,
+      )
+      .replace(
+        /(src|href)=["']\/static\/(.*?)["']/g,
+        `$1="/api/deploy/${id as string}/static/$2"`,
       );
 
     res.setHeader('Content-Type', 'text/html');
