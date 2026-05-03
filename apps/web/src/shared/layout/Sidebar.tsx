@@ -15,7 +15,7 @@ export const Sidebar = () => {
   const navItems = [
     { name: 'Overview', href: '/', icon: LayoutDashboard },
     { name: 'Projects', href: '/projects', icon: GitBranch },
-    { name: 'Deployments', href: '/deployments', icon: Activity },
+    { name: 'Deployments', href: '/deployment', icon: Activity },
     { name: 'Environments', href: '/environment', icon: Database },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];

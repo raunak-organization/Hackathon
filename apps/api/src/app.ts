@@ -6,6 +6,7 @@ import userRouter from './module/user/user.route.js';
 import deployRouter from './module/deploy/deploy.route.js';
 import projectRouter from './module/project/project.routes.js';
 import { errorHandler } from './middlewares/errorHandler.middleware.js';
+import dashboardRouter from './module/dashboard/dashboard.route.js';
 
 const app: Express = express();
 
@@ -21,9 +22,10 @@ app.use(
 );
 
 app.use('/api/auth', authRouter);
+app.use('/api/user', userRouter);
 app.use('/api/deploy', deployRouter);
 app.use('/api/projects', projectRouter);
-app.use('/api/user', userRouter);
+app.use('/api/dashboard', dashboardRouter);
 
 app.use(errorHandler);
 
