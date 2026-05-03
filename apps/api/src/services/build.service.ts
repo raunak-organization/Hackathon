@@ -6,40 +6,15 @@ import { appendLog } from './logger.service.js';
 import { BadRequestError, NotFoundError } from '../utils/appError.js';
 import { projectModel } from '../module/project/project.model.js';
 
+type PackageJson = {
+  scripts?: Record<string, string>;
+};
+
 const updateStatus = async (
   id: string,
   status: 'pending' | 'building' | 'success' | 'failed',
 ) => {
   await deployModel.findByIdAndUpdate(id, { status });
-};
-
-export const detectPackageManager = (dir: string): 'npm' | 'yarn' | 'pnpm' => {
-  if (
-    fs.existsSync(path.join(dir, 'pnpm-lock.yaml')) ||
-    fs.existsSync(path.join(dir, 'pnpm-workspace.yaml'))
-  )
-    return 'pnpm';
-  if (fs.existsSync(path.join(dir, 'yarn.lock'))) return 'yarn';
-  if (fs.existsSync(path.join(dir, 'package-lock.json'))) return 'npm';
-
-  const packageJsonPath = path.join(dir, 'package.json');
-  if (fs.existsSync(packageJsonPath)) {
-    const packageJson = JSON.parse(
-      fs.readFileSync(packageJsonPath, 'utf-8'),
-    ) as {
-      packageManager?: string;
-    };
-
-    if (packageJson.packageManager?.includes('pnpm')) {
-      return 'pnpm';
-    }
-
-    if (packageJson.packageManager?.includes('yarn')) {
-      return 'yarn';
-    }
-  }
-
-  return 'npm';
 };
 
 export const runBuild = async (deploymentId: string) => {
@@ -50,130 +25,125 @@ export const runBuild = async (deploymentId: string) => {
   if (!project) throw new NotFoundError('Project not found');
 
   const repoUrl = project.repoUrl;
-  const dir = path.join(process.cwd(), 'storage', 'deployments', deploymentId);
 
-  if (fs.existsSync(dir)) {
-    fs.rmSync(dir, { recursive: true, force: true });
-  }
-  fs.mkdirSync(dir, { recursive: true });
+  const rootDir = path.resolve(process.cwd(), '..', '..');
+
+  const baseDir = path.join(rootDir, 'storage', 'deployments', deploymentId);
+
+  const repoDir = path.join(baseDir, 'repo');
+  const isolatedDir = path.join(baseDir, 'app'); // 👈 IMPORTANT
+  const outputDir = path.join(baseDir, 'public');
+
+  // reset
+  fs.rmSync(baseDir, { recursive: true, force: true });
+  fs.mkdirSync(baseDir, { recursive: true });
 
   try {
     await updateStatus(deploymentId, 'building');
 
-    // 1. Clone repo
-    await runCommand('git', ['clone', repoUrl, dir], deploymentId);
+    // 1. clone repo
+    await runCommand('git', ['clone', repoUrl, repoDir], deploymentId);
 
-    // 2. Validate repo structure
-    const rootIndexHtml = fs.existsSync(path.join(dir, 'index.html'));
-    const hasPackageJson = fs.existsSync(path.join(dir, 'package.json'));
+    // 2. detect app root inside repo
+    const appDir = fs.existsSync(path.join(repoDir, 'package.json'))
+      ? repoDir
+      : findAppDir(repoDir);
 
-    // 3. Detect static website
-    if (rootIndexHtml && !hasPackageJson) {
+    const indexHtmlPath = path.join(repoDir, 'index.html');
+    const hasIndexHtml = fs.existsSync(indexHtmlPath);
+
+    const packageJsonPath = path.join(appDir, 'package.json');
+    const hasPackageJson = fs.existsSync(packageJsonPath);
+
+    // =========================================================
+    // CASE 1: STATIC SITE (NO package.json)
+    // =========================================================
+    if (hasIndexHtml && !hasPackageJson) {
+      fs.cpSync(repoDir, outputDir, { recursive: true });
+
       await deployModel.findByIdAndUpdate(deploymentId, {
         status: 'success',
         deployUrl: `/api/deploy/${deploymentId}`,
-        buildPath: '',
+        buildPath: 'public',
       });
 
       await projectModel.findByIdAndUpdate(deployment.projectId, {
         currentDeploymentId: deploymentId,
       });
 
-      appendLog(deploymentId, 'Static website detected. No build required.\n');
-
+      appendLog(deploymentId, 'Static site deployed\n');
       return;
     }
 
     if (!hasPackageJson) {
-      throw new BadRequestError(
-        'Unsupported repo structure: no package.json or index.html found',
-      );
+      throw new BadRequestError('No package.json found');
     }
 
-    // 4. Validate package.json exists
-    const packageJsonPath = path.join(dir, 'package.json');
-
-    if (!fs.existsSync(packageJsonPath)) {
-      throw new NotFoundError('package.json not found');
-    }
-
-    // 3. Validate build script exists
     const packageJson = JSON.parse(
       fs.readFileSync(packageJsonPath, 'utf-8'),
-    ) as {
-      scripts?: Record<string, string>;
-    };
+    ) as PackageJson;
 
     if (!packageJson.scripts?.build) {
-      throw new NotFoundError('Build script not found');
+      throw new BadRequestError('Build script missing');
     }
 
-    // 3. Detect package manager
-    const pm = detectPackageManager(dir);
+    // =========================================================
+    // 🔥 ISOLATION STEP (IMPORTANT)
+    // =========================================================
 
-    // 4. Create .env file
-    if (deployment.env) {
-      const envContent = Object.entries(deployment.env)
-        .map(([key, value]) => `${key}=${value}`)
-        .join('\n');
+    // copy ONLY app into clean sandbox
+    fs.mkdirSync(isolatedDir, { recursive: true });
 
-      fs.writeFileSync(path.join(dir, '.env'), envContent);
-    }
+    fs.cpSync(appDir, isolatedDir, {
+      recursive: true,
+      filter: (src) => {
+        // exclude node_modules, .git, etc
+        return !src.includes('node_modules') && !src.includes('.git');
+      },
+    });
 
-    // 5. Install deps
-    if (pm === 'pnpm') {
-      await runCommand('pnpm', ['install'], deploymentId, dir);
-    } else if (pm === 'yarn') {
-      await runCommand('yarn', [], deploymentId, dir);
-    } else {
-      if (pm === 'npm') {
-        if (fs.existsSync(path.join(dir, 'package-lock.json'))) {
-          await runCommand('npm', ['ci'], deploymentId, dir);
-        } else {
-          await runCommand('npm', ['install'], deploymentId, dir);
-        }
-      }
-    }
+    // =========================================================
+    // 3. INSTALL (inside isolated folder ONLY)
+    // =========================================================
+    await runCommand('npm', ['install'], deploymentId, isolatedDir);
 
-    // 6. Build
-    if (pm === 'pnpm') {
-      await runCommand('pnpm', ['run', 'build'], deploymentId, dir);
-    } else if (pm === 'yarn') {
-      await runCommand('yarn', ['build'], deploymentId, dir);
-    } else {
-      await runCommand('npm', ['run', 'build'], deploymentId, dir);
-    }
+    // =========================================================
+    // 4. BUILD (inside isolated folder ONLY)
+    // =========================================================
+    await runCommand('npm', ['run', 'build'], deploymentId, isolatedDir);
 
-    // 7. Detect build folder
+    // =========================================================
+    // 5. detect build output
+    // =========================================================
     const possibleDirs = ['dist', 'build', 'out'];
     let buildPath = '';
 
     for (const folder of possibleDirs) {
-      if (fs.existsSync(path.join(dir, folder))) {
-        buildPath = folder;
+      const full = path.join(isolatedDir, folder);
+      if (fs.existsSync(full)) {
+        buildPath = full;
         break;
       }
     }
 
     if (!buildPath) {
-      throw new NotFoundError('No static output folder found after build');
+      throw new NotFoundError('Build output not found');
     }
 
-    if (
-      fs.existsSync(path.join(dir, '.next')) &&
-      !fs.existsSync(path.join(dir, 'out'))
-    ) {
-      throw new BadRequestError(
-        'SSR frameworks not supported. Only static exports are allowed.',
-      );
-    }
+    // =========================================================
+    // 6. copy to public storage
+    // =========================================================
+    fs.mkdirSync(outputDir, { recursive: true });
 
-    const deployUrl = `/api/deploy/${deploymentId}`;
+    fs.cpSync(buildPath, outputDir, { recursive: true });
 
+    // =========================================================
+    // 7. save deployment
+    // =========================================================
     await deployModel.findByIdAndUpdate(deploymentId, {
       status: 'success',
-      deployUrl,
-      buildPath,
+      deployUrl: `/api/deploy/${deploymentId}`,
+      buildPath: 'public',
     });
 
     await projectModel.findByIdAndUpdate(deployment.projectId, {
@@ -185,4 +155,25 @@ export const runBuild = async (deploymentId: string) => {
     appendLog(deploymentId, `\nERROR: ${message}`);
     await updateStatus(deploymentId, 'failed');
   }
+};
+
+// helper
+const findAppDir = (dir: string): string => {
+  if (fs.existsSync(path.join(dir, 'package.json'))) return dir;
+
+  const items = fs.readdirSync(dir);
+
+  for (const item of items) {
+    const full = path.join(dir, item);
+
+    if (
+      fs.existsSync(full) &&
+      fs.statSync(full).isDirectory() &&
+      fs.existsSync(path.join(full, 'package.json'))
+    ) {
+      return full;
+    }
+  }
+
+  return dir;
 };

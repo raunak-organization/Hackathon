@@ -10,11 +10,12 @@ export const appendLog = (deploymentId: string, log: string) => {
   logBuffer[deploymentId].push(log);
 };
 
+// flush logs every 1 second
 setInterval(async () => {
   for (const deploymentId in logBuffer) {
     const logs = logBuffer[deploymentId];
 
-    if (!logs?.length) continue;
+    if (!logs || logs.length === 0) continue;
 
     await deployModel.findByIdAndUpdate(deploymentId, {
       $push: {
@@ -23,6 +24,7 @@ setInterval(async () => {
         },
       },
     });
+
     logBuffer[deploymentId] = [];
   }
-}, 2000);
+}, 1000);

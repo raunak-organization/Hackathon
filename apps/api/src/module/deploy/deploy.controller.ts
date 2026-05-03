@@ -109,15 +109,17 @@ export const StaticDeployment = asyncHandler(
     // rewrite asset paths inside index.html
     let html = fs.readFileSync(result.filePath, 'utf-8');
 
-    html = html
-      .replace(
-        /(src|href)=["']\/assets\/(.*?)["']/g,
-        `$1="/api/deploy/${id as string}/assets/$2"`,
-      )
-      .replace(
-        /(src|href)=["']\/static\/(.*?)["']/g,
-        `$1="/api/deploy/${id as string}/static/$2"`,
-      );
+    // inject <base> tag safely inside <head>
+    html = html.replace(
+      /<head[^>]*>/i,
+      (match) => `${match}<base href="/api/deploy/${id as string}/">`,
+    );
+
+    // 2. rewrite absolute paths → make them relative to deployment
+    html = html.replace(
+      /(src|href)=["']\/(.*?)["']/g,
+      `$1="/api/deploy/${id as string}/$2"`,
+    );
 
     res.setHeader('Content-Type', 'text/html');
     res.send(html);

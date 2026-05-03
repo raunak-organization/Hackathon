@@ -11,6 +11,9 @@ import authMiddleware from '../../middlewares/auth.middleware.js';
 
 const deployRouter = Router();
 
+// public route
+deployRouter.get('/:id{/*path}', StaticDeployment);
+
 deployRouter.post('/', authMiddleware, createDeployment);
 
 deployRouter.get('/', authMiddleware, getAllDeployment);
@@ -20,8 +23,5 @@ deployRouter.get('/:id/logs', authMiddleware, getDeploymentLogs);
 deployRouter.get('/:id', authMiddleware, getDeploymentById);
 
 deployRouter.post('/:id/rollback', authMiddleware, rollbackDeployment);
-
-// public route
-deployRouter.get('/:id{/*path}', StaticDeployment);
 
 export default deployRouter;

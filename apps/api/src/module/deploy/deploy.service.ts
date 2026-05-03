@@ -125,8 +125,10 @@ export const deployService = {
 
     const buildPath = deployment.buildPath || '';
 
+    const rootDir = path.resolve(process.cwd(), '../../');
+
     const baseDir = path.join(
-      process.cwd(),
+      rootDir,
       'storage',
       'deployments',
       deploymentId,
