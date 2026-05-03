@@ -89,9 +89,9 @@ export const confirmPasswordReset = asyncHandler(
 export const requestEmailUpdate = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = req.userId;
-    const { newEmail } = req.body as { newEmail: string };
+    const { email } = req.body as { email: string };
 
-    await userService.requestEmailUpdate(userId, newEmail);
+    await userService.requestEmailUpdate(userId, email);
 
     res.status(200).json({
       success: true,
@@ -102,10 +102,9 @@ export const requestEmailUpdate = asyncHandler(
 
 export const verifyEmailUpdate = asyncHandler(
   async (req: Request, res: Response) => {
-    const userId = req.userId;
     const { token } = req.body as { token: string };
 
-    await userService.verifyEmailUpdate(userId, token);
+    await userService.verifyEmailUpdate(token);
 
     res.status(200).json({
       success: true,

@@ -138,8 +138,9 @@ export const userService = {
       TokenType.UPDATE_EMAIL,
     );
 
+    console.log('Generated update token:', updateToken);
     //  Send the email
-    const verifyUrl = `${env.FRONTEND_URL}/verify-email?token=${updateToken}`;
+    const verifyUrl = `${env.FRONTEND_URL}/auth/verify-email?token=${updateToken}`;
 
     await sendEmail({
       to: user.email,
@@ -160,30 +161,28 @@ export const userService = {
     return true;
   },
 
-  async verifyEmailUpdate(userId: string, rawToken: string) {
+  // user.service.ts
+  async verifyEmailUpdate(rawToken: string) {
+    console.log('Verifying email update with token:', rawToken);
     const tokenDoc = await tokenModel.findByRawValue(
       rawToken,
       TokenType.UPDATE_EMAIL,
     );
+    console.log('tokenDoc:', tokenDoc);
     if (!tokenDoc) {
       throw new UnauthorizedError('Invalid or expired verification token');
     }
 
-    if (tokenDoc.userId.toString() !== userId) {
-      throw new UnauthorizedError('Token does not belong to this account');
-    }
+    const user = await userModel.findById(tokenDoc.userId);
 
-    const user = await userModel.findById(userId);
     if (!user || !user.pendingEmail) {
       throw new NotFoundError('No pending email update found');
     }
-
     user.email = user.pendingEmail;
     user.pendingEmail = undefined;
     await user.save();
 
     await tokenDoc.markUsed();
-
     return true;
   },
 };

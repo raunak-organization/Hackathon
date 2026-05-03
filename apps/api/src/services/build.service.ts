@@ -5,7 +5,6 @@ import { runCommand } from '../utils/exec.js';
 import { appendLog } from './logger.service.js';
 import { BadRequestError, NotFoundError } from '../utils/appError.js';
 import { projectModel } from '../module/project/project.model.js';
-import { env } from '../config/env.js';
 
 type PackageJson = {
   scripts?: Record<string, string>;
@@ -64,13 +63,8 @@ export const runBuild = async (deploymentId: string) => {
 
       await deployModel.findByIdAndUpdate(deploymentId, {
         status: 'success',
-<<<<<<< HEAD
         deployUrl: `/api/deploy/${deploymentId}`,
         buildPath: 'public',
-=======
-        deployUrl: `${env.BACKEND_URL}/api/deploy/${deploymentId}`,
-        buildPath: '',
->>>>>>> 1213007 (feat(deployment): Fixed deployment feature)
       });
 
       await projectModel.findByIdAndUpdate(deployment.projectId, {
@@ -141,11 +135,7 @@ export const runBuild = async (deploymentId: string) => {
     // =========================================================
     fs.mkdirSync(outputDir, { recursive: true });
 
-<<<<<<< HEAD
     fs.cpSync(buildPath, outputDir, { recursive: true });
-=======
-    const deployUrl = `${env.BACKEND_URL}/api/deploy/${deploymentId}`;
->>>>>>> 1213007 (feat(deployment): Fixed deployment feature)
 
     // =========================================================
     // 7. save deployment
