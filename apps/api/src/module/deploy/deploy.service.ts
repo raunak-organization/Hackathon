@@ -2,7 +2,7 @@ import path from 'node:path';
 import fs from 'node:fs';
 import logger from '../../config/logger.js';
 import { runBuild } from '../../services/build.service.js';
-import { NotFoundError } from '../../utils/appError.js';
+import { ConflictError, NotFoundError } from '../../utils/appError.js';
 import { projectModel } from '../project/project.model.js';
 import { deployModel } from './deploy.model.js';
 
@@ -12,22 +12,24 @@ export const deployService = {
     projectId: string,
     env: Record<string, string>,
   ) {
-    const project = await projectModel.findOne({
-      _id: projectId,
-      userId,
+    const project = await projectModel.findOneAndUpdate(
+      { _id: projectId, userId },
+      { $inc: { deploymentCount: 1 } },
+      { new: true },
+    );
+
+    if (!project) throw new NotFoundError('Project not found or unauthorized');
+    const activeDeployment = await deployModel.findOne({
+      projectId,
+      status: {
+        $in: ['pending', 'building'],
+      },
     });
 
-    if (!project) {
-      throw new NotFoundError('Project not found or unauthorized');
-    }
+    if (activeDeployment)
+      throw new ConflictError('Another deployment is already in progress');
 
-    const lastDeployment = await deployModel
-      .findOne({
-        projectId,
-      })
-      .sort({ version: -1 });
-
-    const version = lastDeployment ? lastDeployment.version + 1 : 1;
+    const version = project.deploymentCount;
     const deployment = await deployModel.create({
       userId,
       projectId,

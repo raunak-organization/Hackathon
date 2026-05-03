@@ -6,6 +6,7 @@ export interface IProject {
   name: string;
   repoUrl: string;
   currentDeploymentId?: Types.ObjectId;
+  deploymentCount: number;
   createdAt: Date;
 }
 
@@ -29,6 +30,10 @@ const projectSchema = new Schema<IProject>(
     currentDeploymentId: {
       type: Schema.Types.ObjectId,
       ref: 'Deploy',
+    },
+    deploymentCount: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true },

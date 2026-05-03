@@ -46,7 +46,6 @@ export const getProjectDeployments = asyncHandler(
 
     res.status(200).json({
       success: true,
-      message: 'Deployments fetched successfully',
       deployments,
     });
   },
