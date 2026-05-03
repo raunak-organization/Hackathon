@@ -172,7 +172,9 @@ export function UserProfile() {
               onClick={handleUpdateEmail}
               disabled={updateEmailMutation.isPending}
             >
-              {updateEmailMutation.isPending ? 'Updating...' : 'Update Email'}
+              {updateEmailMutation.isPending
+                ? 'Check Your current email for verification'
+                : 'Update Email'}
             </Button>
           </div>
         </div>

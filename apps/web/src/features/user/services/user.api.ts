@@ -21,9 +21,20 @@ export const updateName = async (
 export const updateEmail = async (
   payload: UpdateEmailPayload,
 ): Promise<UserResponse> => {
+  console.log('Requesting email update with payload:', payload);
   const { data } = await client.post<UserResponse>(
     '/api/user/request-email-update',
     payload,
+  );
+  return data;
+};
+
+export const verifyEmailUpdate = async (
+  token: string,
+): Promise<SuccessMessageResponse> => {
+  const { data } = await client.post<SuccessMessageResponse>(
+    '/api/user/verify-email',
+    { token },
   );
   return data;
 };

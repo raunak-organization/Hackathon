@@ -37,6 +37,7 @@ const userSchema = new Schema<IUser, UserModel, IUserMethods>(
     },
     pendingEmail: {
       type: String,
+      default: '',
       trim: true,
     },
     passwordHash: {
