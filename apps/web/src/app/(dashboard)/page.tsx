@@ -1,5 +1,5 @@
 import { StatsCards } from '@/features/dashboard/components/StatsCard';
-import { RecentDeployments } from '@/features/deployment/components/RecentDeploymenet';
+import { RecentDeployments } from '@/features/projects/components/RecentDeploymenet';
 import { ProjectList } from '@/features/projects/components/ProjectList';
 import { QuickActions } from '@/features/dashboard/components/QuickAction';
 
