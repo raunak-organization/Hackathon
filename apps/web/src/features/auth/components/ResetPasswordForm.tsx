@@ -3,8 +3,8 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Hexagon, Mail, ArrowLeft, CheckCircle2 } from 'lucide-react';
-import { Input } from '@/ui/Input';
-import { Button } from '@/ui/Button';
+import { Input } from '@/shared/ui/Input';
+import { Button } from '@/shared/ui/Button';
 
 export function ResetPasswordForm() {
   const router = useRouter();

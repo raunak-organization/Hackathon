@@ -8,12 +8,12 @@ import logger from './logger';
 
 // ─── Types ─────────────────────────────────────────────────────────────
 
-type ApiErrorResponse = {
+export type ApiErrorResponse = {
   message?: string;
   success?: boolean;
 };
 
-type RefreshResponse = {
+export type RefreshResponse = {
   success: boolean;
   data: {
     accessToken: string;

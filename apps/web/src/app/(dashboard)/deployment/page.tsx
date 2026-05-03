@@ -1,4 +1,5 @@
-import { DeploymentPipeline } from '@/features/dashboard/components/DeploymentPipeline';
+import { DeploymentPipeline } from '@/features/deployment/components/DeploymentPipeline';
+import { LogsTerminal } from '@/features/deployment/components/LogsTerminal';
 
 export default function DeploymentsPage() {
   return (
@@ -11,6 +12,7 @@ export default function DeploymentsPage() {
       </div>
 
       <DeploymentPipeline />
+      <LogsTerminal />
     </div>
   );
 }

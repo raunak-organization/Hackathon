@@ -1,25 +1,22 @@
 'use client';
-
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   GitBranch,
   Activity,
-  Database,
   Settings,
-  TerminalSquare,
+  Database,
 } from 'lucide-react';
 
 export const Sidebar = () => {
   const pathname = usePathname();
 
   const navItems = [
-    { name: 'Dashboard', href: '/', icon: LayoutDashboard },
-    { name: 'Repositories', href: '/repositories', icon: GitBranch },
+    { name: 'Overview', href: '/', icon: LayoutDashboard },
+    { name: 'Projects', href: '/projects', icon: GitBranch },
     { name: 'Deployments', href: '/deployments', icon: Activity },
-    { name: 'Environment', href: '/environment', icon: Database },
-    { name: 'Logs', href: '/logs', icon: TerminalSquare },
+    { name: 'Environments', href: '/environment', icon: Database },
     { name: 'Settings', href: '/settings', icon: Settings },
   ];
 

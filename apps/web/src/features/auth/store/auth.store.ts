@@ -28,7 +28,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   init: async () => {
     try {
       const res = await refresh();
-      const token = res.accessToken;
+      const token = res.data.accessToken;
 
       setAccessToken(token);
 

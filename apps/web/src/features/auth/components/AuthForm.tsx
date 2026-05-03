@@ -5,9 +5,9 @@ import { loginUserSchema, registerUserSchema } from '@repo/zod-config';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { GithubLoginButton } from './GithubLoginButton';
-import { Input } from '@/ui/Input';
+import { Input } from '@/shared/ui/Input';
 import Link from 'next/link';
-import { Button } from '@/ui/Button';
+import { Button } from '@/shared/ui/Button';
 import axios from 'axios';
 import { FormValues, Props } from '../types';
 

@@ -10,8 +10,8 @@ import {
   Globe,
   Pencil,
 } from 'lucide-react';
-import { Button } from '@/ui/Button';
-import { Card } from '@/ui/Card';
+import { Button } from '@/shared/ui/Button';
+import { Card } from '@/shared/ui/Card';
 import { ActivityFeed } from './ActivityFeed';
 
 export function UserProfile() {

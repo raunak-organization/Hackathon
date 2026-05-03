@@ -1,4 +1,4 @@
-import { EnvVarManager } from '@/features/dashboard/components/EnvVarManager';
+import { EnvVarManager } from '@/features/environment/components/EnvVarManager';
 
 export default function EnvironmentPage() {
   return (

@@ -1,9 +1,10 @@
-import client from '@/lib/client';
+import client, { RefreshResponse } from '@/lib/client';
 import type { AuthResponse, LogoutResponse, MeResponse } from '../types';
 import { LoginUserInput, RegisterUserInput } from '@repo/zod-config';
 
 export const login = async (data: LoginUserInput) => {
   const response = await client.post<AuthResponse>('/auth/login', data);
+  console.log('login', response.data);
   return response.data;
 };
 
@@ -18,7 +19,8 @@ export const getMe = async () => {
 };
 
 export const refresh = async () => {
-  const response = await client.post<AuthResponse>('/auth/refresh');
+  const response = await client.post<RefreshResponse>('/auth/refresh');
+  console.log('refresh', response.data);
   return response.data;
 };
 

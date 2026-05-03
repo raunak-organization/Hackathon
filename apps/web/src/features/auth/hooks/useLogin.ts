@@ -12,7 +12,7 @@ export const useLogin = () => {
 
     onSuccess: (data) => {
       useAuthStore.getState().setToken(data.accessToken);
-      router.replace('/');
+      router.push('/');
     },
   });
 };

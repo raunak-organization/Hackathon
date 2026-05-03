@@ -44,7 +44,7 @@ export const registerUser = asyncHandler(
     res.cookie('refreshToken', refreshToken, cookieOptions);
 
     res.status(201).json({
-      sucess: true,
+      success: true,
       data: {
         accessToken,
         user,

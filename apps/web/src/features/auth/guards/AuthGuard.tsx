@@ -16,7 +16,7 @@ export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
   }, [isLoading, isAuthenticated, router]);
 
   if (isLoading) return <p>Loading...</p>;
-  if (!isAuthenticated) return <p>You are not authenticated</p>;
+  if (!isAuthenticated) return null;
 
   return <>{children}</>;
 };
