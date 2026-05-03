@@ -7,19 +7,19 @@ import {
 } from '../type';
 
 export const getAllDeployments = async (): Promise<Deployment[]> => {
-  const { data } = await client.get<Deployment[]>('/deploy');
+  const { data } = await client.get<Deployment[]>('/api/deploy');
   return data;
 };
 
 export const createDeployment = async (
   payload: CreateDeploymentPayload,
 ): Promise<Deployment> => {
-  const { data } = await client.post<Deployment>('/deploy', payload);
+  const { data } = await client.post<Deployment>('/api/deploy', payload);
   return data;
 };
 
 export const getDeploymentById = async (id: string): Promise<Deployment> => {
-  const { data } = await client.get<Deployment>(`/deploy/${id}`);
+  const { data } = await client.get<Deployment>(`/api/deploy/${id}`);
   return data;
 };
 
@@ -27,12 +27,12 @@ export const rollbackDeployment = async (
   id: string,
 ): Promise<RollbackResponse> => {
   const { data } = await client.post<RollbackResponse>(
-    `/deploy/${id}/rollback`,
+    `/api/deploy/${id}/rollback`,
   );
   return data;
 };
 
 export const getDeploymentLogs = async (id: string): Promise<LogsResponse> => {
-  const { data } = await client.get<LogsResponse>(`/deploy/${id}/logs`);
+  const { data } = await client.get<LogsResponse>(`/api/deploy/${id}/logs`);
   return data;
 };

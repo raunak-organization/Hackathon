@@ -98,7 +98,7 @@ export const ProjectList = () => {
 
                 {/* Deploy button with states */}
                 <button
-                  onClick={() => handleDeploy(project._id, project.repoUrl)}
+                  onClick={async () => await handleDeploy(project._id, project.repoUrl)}
                   disabled={isDeploying || isDeployed}
                   className={`
                     text-xs inline-flex items-center justify-center gap-1.5
