@@ -12,7 +12,7 @@ export const updateName = async (
   payload: UpdateNamePayload,
 ): Promise<UserResponse> => {
   const { data } = await client.patch<UserResponse>(
-    '/user/update-name',
+    '/api/user/update-name',
     payload,
   );
   return data;
@@ -21,8 +21,8 @@ export const updateName = async (
 export const updateEmail = async (
   payload: UpdateEmailPayload,
 ): Promise<UserResponse> => {
-  const { data } = await client.patch<UserResponse>(
-    '/user/request-email-update',
+  const { data } = await client.post<UserResponse>(
+    '/api/user/request-email-update',
     payload,
   );
   return data;
@@ -32,7 +32,7 @@ export const updatePassword = async (
   payload: UpdatePasswordPayload,
 ): Promise<SuccessMessageResponse> => {
   const { data } = await client.put<SuccessMessageResponse>(
-    '/user/update-password',
+    '/api/user/update-password',
     payload,
   );
   return data;
@@ -42,13 +42,14 @@ export const resetPassword = async (
   payload: ResetPasswordRequestPayload,
 ): Promise<SuccessMessageResponse> => {
   const { data } = await client.post<SuccessMessageResponse>(
-    '/user/reset-password',
+    '/api/user/reset-password',
     payload,
   );
   return data;
 };
 
 export const deleteUser = async (): Promise<SuccessMessageResponse> => {
-  const { data } = await client.delete<SuccessMessageResponse>('/user/delete');
+  const { data } =
+    await client.delete<SuccessMessageResponse>('/api/user/delete');
   return data;
 };
