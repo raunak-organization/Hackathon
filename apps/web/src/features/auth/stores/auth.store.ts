@@ -10,6 +10,7 @@ type AuthState = {
   init: () => Promise<void>;
   setToken: (token: string | null) => void;
   logout: () => Promise<void>;
+  clearAuth: () => void;
 };
 
 export const useAuthStore = create<AuthState>((set) => ({
@@ -54,6 +55,14 @@ export const useAuthStore = create<AuthState>((set) => ({
       // ignore
     }
 
+    setAccessToken(null);
+    set({
+      accessToken: null,
+      isAuthenticated: false,
+    });
+  },
+
+  clearAuth: () => {
     setAccessToken(null);
     set({
       accessToken: null,

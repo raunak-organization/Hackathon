@@ -1,11 +1,9 @@
 'use client';
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Bell, HelpCircle, User, LogOut } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export const Header = () => {
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -54,13 +52,12 @@ export const Header = () => {
                 John Smith
               </div>
 
-              <button
-                onClick={() => router.push('/user')}
-                className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-(--bg-tertiary)"
-              >
-                <User size={16} />
-                Profile
-              </button>
+              <Link href="/user">
+                <button className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-(--bg-tertiary)">
+                  <User size={16} />
+                  Profile
+                </button>
+              </Link>
 
               <button className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-500 hover:bg-red-500/10">
                 <LogOut size={16} />
