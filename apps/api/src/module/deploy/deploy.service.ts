@@ -1,5 +1,3 @@
-import path from 'node:path';
-import fs from 'node:fs';
 import logger from '../../config/logger.js';
 import { runBuild } from '../../services/build.service.js';
 import { ConflictError, NotFoundError } from '../../utils/appError.js';
@@ -7,6 +5,7 @@ import { projectModel } from '../project/project.model.js';
 import { deployModel } from './deploy.model.js';
 
 export const deployService = {
+  // --- Create a new deployment -------------------
   async createDeployment(
     userId: string,
     projectId: string,
@@ -51,6 +50,7 @@ export const deployService = {
     return deployment;
   },
 
+  // --- Get all deployments -------------------
   async getAllDeployment(userId: string) {
     const deployments = await deployModel
       .find({ userId })
@@ -60,6 +60,65 @@ export const deployService = {
     return deployments;
   },
 
+  // --- Get all logs -------------------
+  async getAllLogs(userId: string) {
+    const deployments = await deployModel
+      .find({ userId })
+      .select('logs projectId createdAt')
+      .populate('projectId', 'name');
+
+    return deployments.map((d) => ({
+      deploymentId: d._id,
+      project: d.projectId,
+      logs: d.logs,
+      createdAt: d.createdAt,
+    }));
+  },
+
+  // --- Get all env variables -------------------
+  async getAllEnv(userId: string) {
+    const deployments = await deployModel
+      .find({ userId })
+      .select('env projectId createdAt')
+      .populate('projectId', 'name');
+
+    return deployments.map((d) => ({
+      deploymentId: d._id,
+      project: d.projectId,
+      env: d.env,
+      createdAt: d.createdAt,
+    }));
+  },
+
+  // --- Get logs of specific deployment -------------------
+  async getDeploymentLogs(deploymentId: string, userId: string) {
+    const deployment = await deployModel.findOne({
+      _id: deploymentId,
+      userId,
+    });
+
+    if (!deployment) {
+      throw new NotFoundError('Deployment not found');
+    }
+
+    return deployment.logs;
+  },
+
+  // --- Get env variables of specific deployment -------------------
+  async getDeploymentEnv(deploymentId: string, userId: string) {
+    const deployment = await deployModel.findOne({
+      _id: deploymentId,
+      userId,
+    });
+
+    if (!deployment) {
+      throw new NotFoundError('Deployment not found');
+    }
+
+    return deployment.env;
+  },
+
+  // --- Get specific deployment -------------------
   async getDeploymentById(deploymentId: string, userId: string) {
     const deployment = await deployModel
       .findOne({
@@ -75,19 +134,7 @@ export const deployService = {
     return deployment;
   },
 
-  async getDeploymentLogs(deploymentId: string, userId: string) {
-    const deployment = await deployModel.findOne({
-      _id: deploymentId,
-      userId,
-    });
-
-    if (!deployment) {
-      throw new NotFoundError('Deployment not found');
-    }
-
-    return deployment.logs;
-  },
-
+  // --- Rollback to previous deployment -------------------
   async rollback(deploymentId: string, userId: string) {
     const deployment = await deployModel.findOne({
       _id: deploymentId,
@@ -114,50 +161,5 @@ export const deployService = {
     });
 
     return previous;
-  },
-
-  async staticDeployment(deploymentId: string, requestedPath: string) {
-    const deployment = await deployModel.findById(deploymentId);
-
-    if (!deployment || deployment.status !== 'success') {
-      throw new NotFoundError('Deployment not found');
-    }
-
-    const buildPath = deployment.buildPath || '';
-
-    const rootDir = path.resolve(process.cwd(), '../../');
-
-    const baseDir = path.join(
-      rootDir,
-      'storage',
-      'deployments',
-      deploymentId,
-      buildPath,
-    );
-
-    const safePath = path
-      .normalize(requestedPath)
-      .replace(/^(\.\.(\/|\\|$))+/, '');
-    const filePath = path.join(baseDir, safePath);
-    if (!filePath.startsWith(baseDir)) {
-      throw new NotFoundError('Invalid file path');
-    }
-
-    if (fs.existsSync(filePath)) {
-      return {
-        filePath,
-        isHtml: filePath.endsWith('.html'),
-      };
-    }
-
-    const indexPath = path.join(baseDir, 'index.html');
-    if (fs.existsSync(indexPath)) {
-      return {
-        filePath: indexPath,
-        isHtml: true,
-      };
-    }
-
-    throw new NotFoundError('Deployment not found');
   },
 };

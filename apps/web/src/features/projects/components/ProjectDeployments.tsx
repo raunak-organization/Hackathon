@@ -40,7 +40,7 @@ export const ProjectDeployments = () => {
 
             {deployment.deployUrl && (
               <Link
-                href={deployment.deployUrl}
+                href={process.env.NEXT_PUBLIC_DEPLOY_URL + deployment.deployUrl}
                 target="_blank"
                 className="text-sm text-blue-400"
               >

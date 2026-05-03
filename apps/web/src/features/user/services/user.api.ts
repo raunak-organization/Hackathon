@@ -22,7 +22,7 @@ export const updateEmail = async (
   payload: UpdateEmailPayload,
 ): Promise<UserResponse> => {
   const { data } = await client.patch<UserResponse>(
-    '/user/update-email',
+    '/user/request-email-update',
     payload,
   );
   return data;

@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import fs from 'node:fs';
 import { asyncHandler } from '../../utils/asyncHandler.js';
 import { deployService } from './deploy.service.js';
 import { CreateDeployInput, createDeploySchema } from '@repo/zod-config';
 import { getUserId } from '../../utils/getUserId.js';
 
+// --- Create a new deployment -------------------
 export const createDeployment = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = getUserId(req);
@@ -25,6 +25,7 @@ export const createDeployment = asyncHandler(
   },
 );
 
+// --- Get all deployments -------------------
 export const getAllDeployment = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = getUserId(req);
@@ -38,22 +39,31 @@ export const getAllDeployment = asyncHandler(
   },
 );
 
-export const getDeploymentById = asyncHandler(
-  async (req: Request, res: Response) => {
-    const userId = getUserId(req);
+// --- Get all logs -------------------
+export const getAllLogs = asyncHandler(async (req: Request, res: Response) => {
+  const userId = getUserId(req);
 
-    const deployment = await deployService.getDeploymentById(
-      req.params.id as string,
-      userId,
-    );
+  const logs = await deployService.getAllLogs(userId);
 
-    res.status(200).json({
-      success: true,
-      deployment,
-    });
-  },
-);
+  res.status(200).json({
+    success: true,
+    logs,
+  });
+});
 
+// --- Get all env variables -------------------
+export const getAllEnv = asyncHandler(async (req: Request, res: Response) => {
+  const userId = getUserId(req);
+
+  const envs = await deployService.getAllEnv(userId);
+
+  res.status(200).json({
+    success: true,
+    envs,
+  });
+});
+
+// --- Get logs of specific deployment -------------------
 export const getDeploymentLogs = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = getUserId(req);
@@ -70,6 +80,41 @@ export const getDeploymentLogs = asyncHandler(
   },
 );
 
+// --- Get env variables of specific deployment -------------------
+export const getDeploymentEnv = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = getUserId(req);
+
+    const env = await deployService.getDeploymentEnv(
+      req.params.id as string,
+      userId,
+    );
+
+    res.status(200).json({
+      success: true,
+      env,
+    });
+  },
+);
+
+// --- Get specific deployment -------------------
+export const getDeploymentById = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = getUserId(req);
+
+    const deployment = await deployService.getDeploymentById(
+      req.params.id as string,
+      userId,
+    );
+
+    res.status(200).json({
+      success: true,
+      deployment,
+    });
+  },
+);
+
+// --- Rollback to previous deployment -------------------
 export const rollbackDeployment = asyncHandler(
   async (req: Request, res: Response) => {
     const userId = getUserId(req);
@@ -84,44 +129,5 @@ export const rollbackDeployment = asyncHandler(
       message: 'Rollback triggered',
       deployment,
     });
-  },
-);
-
-export const StaticDeployment = asyncHandler(
-  async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const rawPath = req.params.path;
-
-    const requestedPath = Array.isArray(rawPath)
-      ? rawPath.join('/')
-      : rawPath || 'index.html';
-
-    const result = await deployService.staticDeployment(
-      id as string,
-      requestedPath,
-    );
-
-    // serve normal static assets directly
-    if (!result.isHtml) {
-      return res.sendFile(result.filePath);
-    }
-
-    // rewrite asset paths inside index.html
-    let html = fs.readFileSync(result.filePath, 'utf-8');
-
-    // inject <base> tag safely inside <head>
-    html = html.replace(
-      /<head[^>]*>/i,
-      (match) => `${match}<base href="/api/deploy/${id as string}/">`,
-    );
-
-    // 2. rewrite absolute paths → make them relative to deployment
-    html = html.replace(
-      /(src|href)=["']\/(.*?)["']/g,
-      `$1="/api/deploy/${id as string}/$2"`,
-    );
-
-    res.setHeader('Content-Type', 'text/html');
-    res.send(html);
   },
 );
