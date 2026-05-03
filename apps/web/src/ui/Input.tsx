@@ -1,8 +1,8 @@
 'use client';
-import * as React from 'react';
-import { cn } from '@/lib/cn';
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+import React from 'react';
+
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   leftIcon?: React.ReactNode;
@@ -10,51 +10,50 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, leftIcon, rightIcon, className, id, ...props }, ref) => {
-    const generatedId = React.useId();
-    const inputId = id || generatedId;
+  (
+    { className = '', label, error, leftIcon, rightIcon, id, ...props },
+    ref,
+  ) => {
+    const reactId = React.useId();
+    const inputId = id || `input-${reactId}`;
 
     return (
-      <div className="flex flex-col gap-2 w-full">
+      <div className={`flex flex-col gap-2 w-full ${className}`}>
         {label && (
           <label
             htmlFor={inputId}
-            className="text-sm font-medium text-text-secondary"
+            className="text-sm font-medium text-(--text-secondary)"
           >
             {label}
           </label>
         )}
-
-        <div className="relative">
+        <div className="relative flex items-center w-full">
           {leftIcon && (
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary">
+            <span className="pointer-events-none absolute left-3 flex items-center text-(--text-secondary)">
               {leftIcon}
             </span>
           )}
-
           <input
-            ref={ref}
             id={inputId}
-            className={cn(
-              'w-full h-10 rounded-md border bg-bg-primary text-text-primary text-sm',
-              'border-border focus:ring-1 focus:ring-neutral-500 outline-none',
-              'placeholder:text-neutral-500',
-              leftIcon && 'pl-10',
-              rightIcon && 'pr-10',
-              error && 'border-red-500 focus:ring-red-500',
-              className,
-            )}
+            ref={ref}
+            className={`w-full bg-(--bg-primary) border rounded-(--border-radius) text-(--text-primary) text-[0.95rem] transition duration-150 ease-in-out outline-none placeholder:text-[#52525b] ${
+              leftIcon ? 'pl-10' : 'px-3'
+            } ${rightIcon ? 'pr-10' : 'px-3'} py-2.5 border-(--border) focus:border-(--text-secondary) focus:ring-1 focus:ring-[rgba(161,161,170,0.2)] ${
+              error
+                ? 'border-(--accent-red) focus:border-(--accent-red) focus:ring-[rgba(239,68,68,0.2)]'
+                : ''
+            }`}
             {...props}
           />
-
           {rightIcon && (
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-text-secondary">
+            <span className="absolute right-3 flex items-center text-(--text-secondary)">
               {rightIcon}
             </span>
           )}
         </div>
-
-        {error && <span className="text-xs text-red-500">{error}</span>}
+        {error && (
+          <span className="text-(--accent-red) text-xs mt-1">{error}</span>
+        )}
       </div>
     );
   },

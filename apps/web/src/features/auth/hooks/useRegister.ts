@@ -1,30 +1,18 @@
 'use client';
-
 import { useMutation } from '@tanstack/react-query';
-import { useDispatch } from 'react-redux';
 import { register } from '@/features/auth/services/auth.api';
-import { setAccessToken } from '@/lib/client';
-import { setAuth } from '@/features/auth/states/auth.slice';
-import logger from '@/lib/logger';
-import { AuthResponse } from '../type';
 import { useRouter } from 'next/navigation';
-import { RegisterUserInput } from '@repo/zod-config';
+import { useAuthStore } from '../store/auth.store';
 
 export const useRegister = () => {
-  const dispatch = useDispatch();
   const router = useRouter();
 
-  return useMutation<AuthResponse, Error, RegisterUserInput>({
+  return useMutation({
     mutationFn: register,
 
     onSuccess: (data) => {
-      setAccessToken(data.accessToken);
-      dispatch(setAuth(data));
+      useAuthStore.getState().setToken(data.accessToken);
       router.replace('/');
-    },
-
-    onError: (error) => {
-      logger.error(error.message);
     },
   });
 };

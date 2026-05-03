@@ -1,23 +1,29 @@
 'use client';
-import { X } from 'lucide-react';
-import { cn } from '@/lib/cn';
-import { useEffect } from 'react';
 
-export const Modal = ({
-  isOpen,
-  onClose,
-  title,
-  children,
-}: {
+import React, { useEffect } from 'react';
+import { X } from 'lucide-react';
+
+interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
+}
+
+export const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  title,
+  children,
 }) => {
   useEffect(() => {
-    document.body.style.overflow = isOpen ? 'hidden' : '';
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = 'unset';
     };
   }, [isOpen]);
 
@@ -25,30 +31,25 @@ export const Modal = ({
 
   return (
     <div
+      className="fixed inset-0 z-999 flex items-center justify-center bg-[rgba(14,17,22,0.7)] backdrop-blur-sm"
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
     >
       <div
+        className="w-full max-w-[500px] max-h-[90vh] overflow-y-auto rounded-(--border-radius) border border-(--border) bg-(--bg-secondary) shadow-[0_20px_25px_-5_rgba(0,0,0,0.5),0_10px_10px_-5_rgba(0,0,0,0.04)] transition duration-300 ease-out"
         onClick={(e) => e.stopPropagation()}
-        className={cn(
-          'w-full max-w-md rounded-lg border border-border bg-bg-secondary shadow-xl',
-          'animate-in fade-in zoom-in-95 duration-200',
-        )}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between p-5 border-b border-border">
-          {title && <h2 className="text-base font-semibold">{title}</h2>}
-
+        <div className="flex items-center justify-between border-b border-(--border) px-6 py-5">
+          {title && (
+            <h2 className="m-0 text-[1.1rem] font-semibold">{title}</h2>
+          )}
           <button
+            className="rounded-[4px] p-1 text-(--text-secondary) transition duration-150 ease-in-out hover:bg-[rgba(255,255,255,0.1)] hover:text-(--text-primary)"
             onClick={onClose}
-            className="p-1 rounded-md hover:bg-white/10"
           >
-            <X size={18} />
+            <X size={20} />
           </button>
         </div>
-
-        {/* Content */}
-        <div className="p-5">{children}</div>
+        <div className="p-6">{children}</div>
       </div>
     </div>
   );

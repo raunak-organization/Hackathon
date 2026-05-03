@@ -1,23 +1,22 @@
 'use client';
-
-import { useMe } from '../hooks/useMe';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
+import { useAuthStore } from '../store/auth.store';
 
 export const AuthGuard = ({ children }: { children: React.ReactNode }) => {
-  const { data, isLoading, isError } = useMe();
+  const { isAuthenticated, isLoading } = useAuthStore();
   const router = useRouter();
 
   useEffect(() => {
     if (isLoading) return;
 
-    // ❌ not logged in
-    if (isError || !data?.data) {
+    if (!isAuthenticated) {
       router.replace('/auth/login');
     }
-  }, [isLoading, isError, data, router]);
+  }, [isLoading, isAuthenticated, router]);
 
   if (isLoading) return <p>Loading...</p>;
+  if (!isAuthenticated) return <p>You are not authenticated</p>;
 
   return <>{children}</>;
 };

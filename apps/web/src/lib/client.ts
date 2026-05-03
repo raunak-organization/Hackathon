@@ -14,17 +14,16 @@ type ApiErrorResponse = {
 };
 
 type RefreshResponse = {
-  accessToken: string;
+  success: boolean;
+  data: {
+    accessToken: string;
+  };
 };
 
 // ─── Type Guard ────────────────────────────────────────────────────────
 
 const isApiError = (data: unknown): data is ApiErrorResponse => {
   return typeof data === 'object' && data !== null && 'message' in data;
-};
-
-type CustomAxiosRequestConfig = InternalAxiosRequestConfig & {
-  _retry?: boolean;
 };
 
 // ─── Token State ───────────────────────────────────────────────────────
@@ -53,8 +52,11 @@ const refreshClient: AxiosInstance = axios.create({
 // ─── Request Interceptor ───────────────────────────────────────────────
 
 client.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-  if (!config.headers) config.headers = new AxiosHeaders();
   if (accessToken) {
+    if (!config.headers) {
+      config.headers = new AxiosHeaders();
+    }
+
     config.headers.set('Authorization', `Bearer ${accessToken}`);
   }
 
@@ -67,28 +69,31 @@ client.interceptors.response.use(
   (res) => res,
 
   async (error: AxiosError<unknown>) => {
-    const originalRequest = error.config as CustomAxiosRequestConfig;
-
-    if (!originalRequest || originalRequest._retry) {
-      return Promise.reject(
-        error instanceof Error ? error : new Error('Request Failed'),
-      );
+    if (!error.config) {
+      return Promise.reject(new Error('Unexpected error'));
     }
+
+    const originalRequest = error.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
 
     const status = error.response?.status;
     const url = originalRequest.url ?? '';
+    const responseData = error.response?.data;
+
+    // ─── Extract message safely ────────────────────────────────────────
+    const message = isApiError(responseData)
+      ? (responseData.message ?? 'Something went wrong')
+      : error.message || 'Something went wrong';
 
     // ─── Auth route guard ─────────────────────────────────────────────
-    const isAuthRoute = ['/auth/login', '/auth/register', '/auth/refresh'].some(
-      (route) => url.includes(route),
-    );
-
-    const message = isApiError(error.response?.data)
-      ? (error.response.data.message ?? 'Something went wrong')
-      : (error.message ?? 'Something went wrong');
+    const isAuthRoute =
+      url.includes('/auth/login') ||
+      url.includes('/auth/register') ||
+      url.includes('/auth/refresh');
 
     // ─── Refresh Logic ────────────────────────────────────────────────
-    if (status === 401 && !isAuthRoute) {
+    if (status === 401 && !originalRequest._retry && !isAuthRoute) {
       originalRequest._retry = true;
 
       try {
@@ -101,7 +106,7 @@ client.interceptors.response.use(
         const data = await refreshPromise;
         refreshPromise = null;
 
-        setAccessToken(data.accessToken);
+        setAccessToken(data.data.accessToken);
 
         if (!originalRequest.headers) {
           originalRequest.headers = new AxiosHeaders();
@@ -109,7 +114,7 @@ client.interceptors.response.use(
 
         originalRequest.headers.set(
           'Authorization',
-          `Bearer ${data.accessToken}`,
+          `Bearer ${data.data.accessToken}`,
         );
 
         return client(originalRequest);
@@ -119,24 +124,21 @@ client.interceptors.response.use(
 
         logger.error('Refresh Token Failed', { err });
 
-        if (typeof window !== 'undefined') {
-          window.location.href = '/login';
-        }
-
         return Promise.reject(
-          err instanceof Error ? err : new Error('Refresh Token Failed'),
+          err instanceof Error ? err : new Error('Refresh failed'),
         );
       }
     }
 
+    // ─── Log Error ────────────────────────────────────────────────────
     logger.error('API Error', {
       status,
       message,
       url,
-      data: error.response?.data,
+      data: responseData,
     });
 
-    return Promise.reject(new Error(message));
+    return Promise.reject(error);
   },
 );
 
