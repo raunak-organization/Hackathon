@@ -47,6 +47,7 @@ export default function AuthForm({ type, onSubmit, isLoading }: Props) {
           password: data.password,
         });
       }
+      router.refresh();
       router.push('/');
     } catch (err) {
       let message = 'Something went wrong';
