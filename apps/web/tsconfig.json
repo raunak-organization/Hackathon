@@ -4,7 +4,6 @@
     "plugins": [{ "name": "next" }],
     "paths": {
       "@/*": ["src/*"],
-      "@repo/*": ["../../packages/*/src"]
     },
     "strictNullChecks": true,
     "skipLibCheck": true,
@@ -13,8 +12,6 @@
   "include": [
     "next-env.d.ts",
     "src",
-    "../../packages/**/*.ts",
-    "../../packages/**/*.tsx",
     ".next/types/**/*.ts"
   ],
   "exclude": ["node_modules"]
