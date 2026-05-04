@@ -2,7 +2,8 @@
   "extends": "../../packages/typescript-config/base.json",
   "compilerOptions": {
     "rootDir": ".",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "typeRoots": ["../../node_modules/@types", "./node_modules/@types"]
   },
   "include": ["src", "server.ts"]
 }
