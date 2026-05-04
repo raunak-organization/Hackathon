@@ -26,7 +26,7 @@ export const QuickActions = () => {
     <div className="bg-(--bg-primary) border border-(--border) rounded-(--border-radius) p-6">
       <h2 className="text-lg font-semibold mb-5">Quick Actions</h2>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {actions.map((action) => {
           const Icon = action.icon;
 

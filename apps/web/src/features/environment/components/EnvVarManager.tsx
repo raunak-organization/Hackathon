@@ -40,7 +40,7 @@ export const EnvVarManager = () => {
 
   return (
     <div className="mb-10">
-      <div className="flex justify-between items-center mb-5">
+      <div className="flex flex-wrap justify-between items-center gap-3 mb-5">
         <h2 className="text-[1.15rem] font-semibold text-(--text-primary) flex items-center gap-2 tracking-tight m-0">
           <Database size={20} />
           Environment Variables
@@ -51,8 +51,8 @@ export const EnvVarManager = () => {
         </button>
       </div>
 
-      <div className="w-full bg-(--bg-primary) rounded-(--border-radius) border border-(--border) overflow-hidden">
-        <table className="w-full border-collapse">
+      <div className="w-full bg-(--bg-primary) rounded-(--border-radius) border border-(--border) overflow-hidden overflow-x-auto">
+        <table className="w-full border-collapse min-w-[600px]">
           <thead>
             <tr>
               <th className="text-left p-4 bg-(--bg-secondary) text-(--text-secondary) font-medium text-[0.85rem] border-b border-(--border)">

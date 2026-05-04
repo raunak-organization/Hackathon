@@ -40,7 +40,6 @@ export default function AuthForm({ type, onSubmit, isLoading }: Props) {
           password: data.password,
         });
       } else {
-        console.log('LOGIN PAYLOAD:', data);
         await onSubmit({
           email: data.email,
           password: data.password,
@@ -161,12 +160,12 @@ export default function AuthForm({ type, onSubmit, isLoading }: Props) {
         <span className="text-text-secondary">
           {isLogin ? "Don't have an account?" : 'Already have an account?'}
         </span>
-        <button
-          type="button"
-          className="text-text-primary font-semibold transition-colors bg-transparent border-none cursor-pointer hover:text-accent-blue"
+        <Link
+          href={isLogin ? '/auth/register' : '/auth/login'}
+          className="text-text-primary font-semibold transition-colors hover:opacity-75"
         >
           {isLogin ? 'Sign up' : 'Sign in'}
-        </button>
+        </Link>
       </div>
     </div>
   );

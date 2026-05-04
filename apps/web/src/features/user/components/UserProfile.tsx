@@ -96,7 +96,7 @@ export function UserProfile() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-8">
+    <div className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-(--text-primary)">
@@ -111,7 +111,7 @@ export function UserProfile() {
       {/* Main Container */}
       <div className="bg-(--bg-primary) border border-(--border) rounded-2xl overflow-hidden">
         {/* Name Section */}
-        <div className="p-8 border-b border-(--border)">
+        <div className="p-4 sm:p-8 border-b border-(--border)">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 rounded-lg bg-(--bg-secondary)">
               <User size={18} />
@@ -145,7 +145,7 @@ export function UserProfile() {
         </div>
 
         {/* Email Section */}
-        <div className="p-8 border-b border-(--border)">
+        <div className="p-4 sm:p-8 border-b border-(--border)">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 rounded-lg bg-(--bg-secondary)">
               <Mail size={18} />
@@ -179,7 +179,7 @@ export function UserProfile() {
         </div>
 
         {/* Password Section */}
-        <div className="p-8 border-b border-(--border)">
+        <div className="p-4 sm:p-8 border-b border-(--border)">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 rounded-lg bg-(--bg-secondary)">
               <Lock size={18} />
@@ -213,7 +213,7 @@ export function UserProfile() {
               />
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
               <Button
                 onClick={handleUpdatePassword}
                 disabled={updatePasswordMutation.isPending}
@@ -237,7 +237,7 @@ export function UserProfile() {
         </div>
 
         {/* Danger Zone */}
-        <div className="p-8 bg-red-500/5">
+        <div className="p-4 sm:p-8 bg-red-500/5">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-2 rounded-lg bg-red-500/10 text-red-400">
               <Shield size={18} />

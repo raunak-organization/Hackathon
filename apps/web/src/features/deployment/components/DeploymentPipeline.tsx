@@ -17,35 +17,38 @@ export const DeploymentPipeline = () => {
         Active Deployment Pipeline
       </h2>
 
-      <div className="flex items-center justify-between p-8 border rounded-lg bg-(--bg-primary) border-(--border)">
-        {steps.map((step, i) => {
-          const Icon = step.icon;
+      {/* Scrollable on mobile so the pipeline stays connected */}
+      <div className="overflow-x-auto -mx-1 px-1">
+        <div className="flex items-center justify-between p-6 sm:p-8 border rounded-lg bg-(--bg-primary) border-(--border) min-w-[360px]">
+          {steps.map((step, i) => {
+            const Icon = step.icon;
 
-          return (
-            <div key={i} className="flex items-center flex-1">
-              <div className="flex flex-col items-center gap-2">
-                <div
-                  className={`w-11 h-11 flex items-center justify-center rounded-full border
-                  ${
-                    step.status === 'active'
-                      ? 'bg-white text-black'
-                      : step.status === 'success'
-                        ? 'bg-green-500 text-white border-green-500'
-                        : 'text-(--text-secondary) border-(--border)'
-                  }`}
-                >
-                  <Icon size={18} />
+            return (
+              <div key={i} className="flex items-center flex-1">
+                <div className="flex flex-col items-center gap-2">
+                  <div
+                    className={`w-11 h-11 flex items-center justify-center rounded-full border
+                    ${
+                      step.status === 'active'
+                        ? 'bg-white text-black'
+                        : step.status === 'success'
+                          ? 'bg-green-500 text-white border-green-500'
+                          : 'text-(--text-secondary) border-(--border)'
+                    }`}
+                  >
+                    <Icon size={18} />
+                  </div>
+
+                  <span className="text-sm">{step.label}</span>
                 </div>
 
-                <span className="text-sm">{step.label}</span>
+                {i !== steps.length - 1 && (
+                  <div className="flex-1 h-px bg-(--border) mx-4" />
+                )}
               </div>
-
-              {i !== steps.length - 1 && (
-                <div className="flex-1 h-px bg-(--border) mx-4" />
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ export const StatsCards = () => {
 
   if (isLoading) {
     return (
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
         {[1, 2, 3, 4].map((item) => (
           <div
             key={item}
@@ -46,14 +46,14 @@ export const StatsCards = () => {
   ];
 
   return (
-    <div className="grid grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
       {stats.map((item) => {
         const Icon = item.icon;
 
         return (
           <div
             key={item.title}
-            className="bg-(--bg-primary) border border-(--border) rounded-(--border-radius) p-6 hover:bg-(--bg-secondary) transition"
+            className="bg-(--bg-primary) border border-(--border) rounded-(--border-radius) p-6 hover:bg-(--bg-secondary) hover:border-[#555] hover:shadow-[0_4px_16px_rgba(0,0,0,0.2)] transition-all duration-200 cursor-default"
           >
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm text-(--text-secondary)">
