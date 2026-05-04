@@ -16,6 +16,8 @@
     "@commitlint/cli": "^20.5.2",
     "@commitlint/config-conventional": "^20.5.0",
     "@repo/eslint-config": "workspace:^",
+    "@types/cors": "^2.8.19",
+    "@types/nodemailer": "^8.0.0",
     "eslint": "^9.39.1",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",

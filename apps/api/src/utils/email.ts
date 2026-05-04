@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import { env } from '../config/env.js';
+import { InternalServerError } from './appError.js';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
@@ -17,7 +18,7 @@ transporter
   .then(() => {
     console.log('📧 Email transporter is ready to send emails');
   })
-  .catch((error) => {
+  .catch((error: unknown) => {
     console.error('❌ Email transporter verification failed:', error);
   });
 
@@ -42,9 +43,9 @@ export async function sendEmail({
     };
 
     const details = await transporter.sendMail(mailOptions);
-    console.log('✅ Email sent successfully:', details.messageId);
-  } catch (error) {
+    console.log('Email sent successfully:', details.messageId);
+  } catch (error: unknown) {
     console.error(`Failed to send email to ${to}:`, error);
-    throw new Error('Email sending failed');
+    throw new InternalServerError('Email sending failed');
   }
 }
