@@ -16,6 +16,7 @@ export default function AuthForm({ type, onSubmit, isLoading }: Props) {
 
   const schema = isLogin ? loginUserSchema : registerUserSchema;
   const [backendError, setBackendError] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const {
     register,
@@ -45,6 +46,7 @@ export default function AuthForm({ type, onSubmit, isLoading }: Props) {
           password: data.password,
         });
       }
+      setIsSuccess(true);
     } catch (err) {
       let message = 'Something went wrong';
 
@@ -84,6 +86,18 @@ export default function AuthForm({ type, onSubmit, isLoading }: Props) {
       {backendError && (
         <div className="mb-6 p-3 bg-[rgba(239,68,68,0.1)] border border-(--accent-red) rounded-(--border-radius) text-(--accent-red) text-sm">
           {backendError}
+        </div>
+      )}
+
+      {isSuccess && (
+        <div className="mb-6 p-3 bg-[rgba(34,197,94,0.1)] border border-green-500 rounded-(--border-radius) text-green-500 text-sm text-center">
+          Redirecting you to the dashboard...{' '}
+          <Link
+            href="/"
+            className="font-semibold underline underline-offset-2 hover:opacity-75"
+          >
+            Click here if not redirected
+          </Link>
         </div>
       )}
 
