@@ -11,6 +11,10 @@ overrides:
 importers:
 
   .:
+    dependencies:
+      turbo:
+        specifier: ^2.9.6
+        version: 2.9.6
     devDependencies:
       '@commitlint/cli':
         specifier: ^20.5.2
@@ -33,9 +37,6 @@ importers:
       prettier:
         specifier: ^3.7.4
         version: 3.8.3
-      turbo:
-        specifier: ^2.9.6
-        version: 2.9.6
       typescript:
         specifier: 5.9.2
         version: 5.9.2
