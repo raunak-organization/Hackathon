@@ -134,8 +134,15 @@ export const runBuild = async (deploymentId: string) => {
     // 6. copy to public storage
     // =========================================================
     fs.mkdirSync(outputDir, { recursive: true });
+    
 
     fs.cpSync(buildPath, outputDir, { recursive: true });
+    if (fs.existsSync(deployedIndexHtml)) {
+      let html = fs.readFileSync(deployedIndexHtml, 'utf-8');
+      html = html.replace(/(href|src)="\//g, '$1="./');
+      fs.writeFileSync(deployedIndexHtml, html, 'utf-8');
+      appendLog(deploymentId, 'Rewrote index.html asset paths to relative\n');
+    }
 
     // =========================================================
     // 7. save deployment
