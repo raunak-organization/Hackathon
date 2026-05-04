@@ -134,7 +134,7 @@ export const runBuild = async (deploymentId: string) => {
     // 6. copy to public storage
     // =========================================================
     fs.mkdirSync(outputDir, { recursive: true });
-
+    fs.cpSync(buildPath, outputDir, { recursive: true });
 
     // =========================================================
     // 7. save deployment
