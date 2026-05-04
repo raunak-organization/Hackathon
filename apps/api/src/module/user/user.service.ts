@@ -137,8 +137,6 @@ export const userService = {
       user._id,
       TokenType.UPDATE_EMAIL,
     );
-
-    console.log('Generated update token:', updateToken);
     //  Send the email
     const verifyUrl = `${env.FRONTEND_URL}/auth/verify-email?token=${updateToken}`;
 
@@ -163,12 +161,10 @@ export const userService = {
 
   // user.service.ts
   async verifyEmailUpdate(rawToken: string) {
-    console.log('Verifying email update with token:', rawToken);
     const tokenDoc = await tokenModel.findByRawValue(
       rawToken,
       TokenType.UPDATE_EMAIL,
     );
-    console.log('tokenDoc:', tokenDoc);
     if (!tokenDoc) {
       throw new UnauthorizedError('Invalid or expired verification token');
     }

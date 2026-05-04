@@ -4,5 +4,5 @@ import { env } from '../config/env.js';
 export const github = new GitHub(
   env.GITHUB_CLIENT_ID,
   env.GITHUB_CLIENT_SECRET,
-  `${env.FRONTEND_URL}/auth/github/callback`,
+  env.GITHUB_CALLBACK_URL,
 );

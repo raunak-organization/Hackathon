@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
-import { UnauthorizedError } from '../utils/appError.js';
-import { tokenService } from '../module/token/token.service.js';
-import logger from '../config/logger.js';
+import { UnauthorizedError } from '../../utils/appError.js';
+import { tokenService } from '../token/token.service.js';
+import logger from '../../config/logger.js';
 
 const authMiddleware = (req: Request, _res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
