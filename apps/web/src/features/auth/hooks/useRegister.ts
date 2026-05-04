@@ -12,7 +12,6 @@ export const useRegister = () => {
 
     onSuccess: (data) => {
       useAuthStore.getState().setToken(data.accessToken);
-      router.replace('/');
     },
   });
 };
