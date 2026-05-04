@@ -25,12 +25,6 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:^
         version: link:packages/eslint-config
-      '@types/cors':
-        specifier: ^2.8.19
-        version: 2.8.19
-      '@types/nodemailer':
-        specifier: ^8.0.0
-        version: 8.0.0
       eslint:
         specifier: ^9.39.1
         version: 9.39.4(jiti@2.6.1)
@@ -55,12 +49,6 @@ importers:
       '@repo/zod-config':
         specifier: workspace:^
         version: link:../../packages/zod-config
-      '@types/cookie-parser':
-        specifier: ^1.4.10
-        version: 1.4.10(@types/express@5.0.6)
-      '@types/jsonwebtoken':
-        specifier: ^9.0.10
-        version: 9.0.10
       arctic:
         specifier: ^3.7.0
         version: 3.7.0
@@ -107,9 +95,21 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:^
         version: link:../../packages/typescript-config
+      '@types/cookie-parser':
+        specifier: ^1.4.10
+        version: 1.4.10(@types/express@5.0.6)
+      '@types/cors':
+        specifier: ^2.8.19
+        version: 2.8.19
       '@types/express':
         specifier: ^5.0.6
         version: 5.0.6
+      '@types/jsonwebtoken':
+        specifier: ^9.0.10
+        version: 9.0.10
+      '@types/nodemailer':
+        specifier: ^8.0.0
+        version: 8.0.0
       nodemon:
         specifier: ^3.1.14
         version: 3.1.14
