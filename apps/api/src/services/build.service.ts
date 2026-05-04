@@ -134,7 +134,8 @@ export const runBuild = async (deploymentId: string) => {
     // 6. copy to public storage
     // =========================================================
     fs.mkdirSync(outputDir, { recursive: true });
-    
+
+    const deployedIndexHtml = path.join(outputDir, 'index.html');
 
     fs.cpSync(buildPath, outputDir, { recursive: true });
     if (fs.existsSync(deployedIndexHtml)) {
