@@ -8,6 +8,7 @@ import projectRouter from './module/project/project.route.js';
 import { errorHandler } from './module/middlewares/errorHandler.middleware.js';
 import dashboardRouter from './module/dashboard/dashboard.route.js';
 import staticRouter from './module/static/staticDeploy.route.js';
+import { env } from './config/env.js';
 
 const app: Express = express();
 
@@ -17,7 +18,7 @@ app.use(cookieParser());
 
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: env.FRONTEND_URL,
     credentials: true,
   }),
 );
