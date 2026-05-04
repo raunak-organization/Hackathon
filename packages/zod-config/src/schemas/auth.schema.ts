@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PASSWORD_REGEX } from '../constants/regex.js';
+import { PASSWORD_REGEX } from '../constants/regex';
 
 const emailSchema = z
   .string()
