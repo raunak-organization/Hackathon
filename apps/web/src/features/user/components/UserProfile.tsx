@@ -1,5 +1,4 @@
 'use client';
-
 import { useEffect, useState } from 'react';
 import { User, Mail, Lock, Trash2, Shield } from 'lucide-react';
 
