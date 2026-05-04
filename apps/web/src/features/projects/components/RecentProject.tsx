@@ -1,6 +1,12 @@
 'use client';
 import { useState } from 'react';
-import { FolderGit2, GitBranch, Rocket, CheckCircle, Loader2 } from 'lucide-react';
+import {
+  FolderGit2,
+  GitBranch,
+  Rocket,
+  CheckCircle,
+  Loader2,
+} from 'lucide-react';
 import { useProjects } from '../hooks/useProjects';
 import { useCreateDeployment } from '@/features/deployment/hooks/useCreateDeployment';
 
@@ -10,7 +16,9 @@ export const RecentProjects = () => {
   const { data, isLoading } = useProjects();
   const { mutateAsync } = useCreateDeployment();
   const projects = data?.projects || [];
-  const [deployStates, setDeployStates] = useState<Record<string, DeployState>>({});
+  const [deployStates, setDeployStates] = useState<Record<string, DeployState>>(
+    {},
+  );
 
   if (isLoading) {
     return (
@@ -21,7 +29,10 @@ export const RecentProjects = () => {
         </div>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-center justify-between pb-4 border-b border-(--border) last:border-none animate-pulse">
+            <div
+              key={i}
+              className="flex items-center justify-between pb-4 border-b border-(--border) last:border-none animate-pulse"
+            >
               <div className="space-y-2">
                 <div className="h-4 w-28 rounded bg-(--bg-tertiary)" />
                 <div className="h-3 w-44 rounded bg-(--bg-tertiary)" />
@@ -45,10 +56,10 @@ export const RecentProjects = () => {
     );
   }
 
-  const handleDeploy = async (projectId: string, repoUrl: string) => {
+  const handleDeploy = async (projectId: string) => {
     setDeployStates((prev) => ({ ...prev, [projectId]: 'deploying' }));
     try {
-      await mutateAsync({ projectId, repoUrl });
+      await mutateAsync({ projectId });
       setDeployStates((prev) => ({ ...prev, [projectId]: 'deployed' }));
       setTimeout(() => {
         setDeployStates((prev) => ({ ...prev, [projectId]: 'idle' }));
@@ -77,7 +88,9 @@ export const RecentProjects = () => {
               className="flex items-center justify-between border-b border-(--border) pb-4 last:border-none"
             >
               <div className="min-w-0 mr-4">
-                <p className="font-medium text-(--text-primary) truncate">{project.name}</p>
+                <p className="font-medium text-(--text-primary) truncate">
+                  {project.name}
+                </p>
                 <div className="flex items-center gap-2 text-sm text-(--text-secondary) mt-0.5">
                   <GitBranch size={13} className="shrink-0" />
                   <span className="truncate text-xs">{project.repoUrl}</span>
@@ -85,25 +98,32 @@ export const RecentProjects = () => {
               </div>
 
               <button
-                onClick={() => handleDeploy(project._id, project.repoUrl)}
+                onClick={async () => await handleDeploy(project._id)}
                 disabled={isDeploying || isDeployed}
                 className={`
                   shrink-0 text-xs inline-flex items-center justify-center gap-1.5
                   px-3 py-1.5 rounded-md font-medium transition-all duration-200
-                  ${isDeployed
-                    ? 'bg-green-500/15 text-green-400 border border-green-500/30 cursor-default'
-                    : isDeploying
-                      ? 'bg-(--bg-tertiary) text-(--text-secondary) cursor-not-allowed opacity-70'
-                      : 'bg-(--text-primary) text-(--bg-primary) hover:opacity-90 active:scale-95'
+                  ${
+                    isDeployed
+                      ? 'bg-green-500/15 text-green-400 border border-green-500/30 cursor-default'
+                      : isDeploying
+                        ? 'bg-(--bg-tertiary) text-(--text-secondary) cursor-not-allowed opacity-70'
+                        : 'bg-(--text-primary) text-(--bg-primary) hover:opacity-90 active:scale-95'
                   }
                 `}
               >
                 {isDeployed ? (
-                  <><CheckCircle size={12} /> Deployed</>
+                  <>
+                    <CheckCircle size={12} /> Deployed
+                  </>
                 ) : isDeploying ? (
-                  <><Loader2 size={12} className="animate-spin" /> Deploying…</>
+                  <>
+                    <Loader2 size={12} className="animate-spin" /> Deploying…
+                  </>
                 ) : (
-                  <><Rocket size={12} /> Deploy</>
+                  <>
+                    <Rocket size={12} /> Deploy
+                  </>
                 )}
               </button>
             </div>

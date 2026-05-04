@@ -63,7 +63,7 @@ export const runBuild = async (deploymentId: string) => {
 
       await deployModel.findByIdAndUpdate(deploymentId, {
         status: 'success',
-        deployUrl: `/api/deploy/${deploymentId}`,
+        deployUrl: `/api/static/${deploymentId}`,
         buildPath: 'public',
       });
 
@@ -142,7 +142,7 @@ export const runBuild = async (deploymentId: string) => {
     // =========================================================
     await deployModel.findByIdAndUpdate(deploymentId, {
       status: 'success',
-      deployUrl: `/api/deploy/${deploymentId}`,
+      deployUrl: `/api/static/${deploymentId}`,
       buildPath: 'public',
     });
 

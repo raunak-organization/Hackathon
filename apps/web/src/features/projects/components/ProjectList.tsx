@@ -15,7 +15,9 @@ export const ProjectList = () => {
   const projects = data?.projects || [];
 
   // Track deploy state per project id
-  const [deployStates, setDeployStates] = useState<Record<string, DeployState>>({});
+  const [deployStates, setDeployStates] = useState<Record<string, DeployState>>(
+    {},
+  );
 
   if (isLoading) {
     return (
@@ -51,17 +53,22 @@ export const ProjectList = () => {
           Connected Projects
         </h2>
         <div className="bg-(--bg-primary) border border-(--border) rounded-(--border-radius) p-10 text-center">
-          <Folder size={32} className="mx-auto mb-3 text-(--text-secondary) opacity-40" />
-          <p className="text-sm text-(--text-secondary)">No projects connected yet.</p>
+          <Folder
+            size={32}
+            className="mx-auto mb-3 text-(--text-secondary) opacity-40"
+          />
+          <p className="text-sm text-(--text-secondary)">
+            No projects connected yet.
+          </p>
         </div>
       </div>
     );
   }
 
-  const handleDeploy = async (projectId: string, repoUrl: string) => {
+  const handleDeploy = async (projectId: string) => {
     setDeployStates((prev) => ({ ...prev, [projectId]: 'deploying' }));
     try {
-      await mutateAsync({ projectId, repoUrl });
+      await mutateAsync({ projectId });
       setDeployStates((prev) => ({ ...prev, [projectId]: 'deployed' }));
       // Reset back to idle after 3 seconds
       setTimeout(() => {
@@ -98,16 +105,17 @@ export const ProjectList = () => {
 
                 {/* Deploy button with states */}
                 <button
-                  onClick={async () => await handleDeploy(project._id, project.repoUrl)}
+                  onClick={async () => await handleDeploy(project._id)}
                   disabled={isDeploying || isDeployed}
                   className={`
                     text-xs inline-flex items-center justify-center gap-1.5
                     px-2.5 py-1.5 rounded-md font-medium transition-all duration-200
-                    ${isDeployed
-                      ? 'bg-green-500/15 text-green-400 border border-green-500/30 cursor-default'
-                      : isDeploying
-                        ? 'bg-(--bg-tertiary) text-(--text-secondary) cursor-not-allowed opacity-70'
-                        : 'bg-(--text-primary) text-(--bg-primary) hover:opacity-90 active:scale-95'
+                    ${
+                      isDeployed
+                        ? 'bg-green-500/15 text-green-400 border border-green-500/30 cursor-default'
+                        : isDeploying
+                          ? 'bg-(--bg-tertiary) text-(--text-secondary) cursor-not-allowed opacity-70'
+                          : 'bg-(--text-primary) text-(--bg-primary) hover:opacity-90 active:scale-95'
                     }
                   `}
                 >
@@ -136,9 +144,7 @@ export const ProjectList = () => {
               </div>
 
               <Link href={`/projects/${project._id}`}>
-                <Button
-                  className="inline-flex items-center justify-center w-full bg-(--text-primary) text-(--bg-primary) px-4 py-2 rounded-md text-sm font-medium"
-                >
+                <Button className="inline-flex items-center justify-center w-full bg-(--text-primary) text-(--bg-primary) px-4 py-2 rounded-md text-sm font-medium">
                   View Deployments
                 </Button>
               </Link>

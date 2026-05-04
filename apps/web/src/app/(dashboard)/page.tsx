@@ -1,7 +1,7 @@
 import { StatsCards } from '@/features/dashboard/components/StatsCard';
-import { RecentDeployments } from '@/features/projects/components/RecentDeploymenet';
+import { RecentDeployments } from '@/features/deployment/components/RecentDeployments';
 import { ProjectList } from '@/features/projects/components/ProjectList';
-import { QuickActions } from '@/features/dashboard/components/QuickAction';
+// import { QuickActions } from '@/features/dashboard/components/QuickAction';
 
 export default function DashboardPage() {
   return (
@@ -18,7 +18,7 @@ export default function DashboardPage() {
       <StatsCards />
       <ProjectList />
       <RecentDeployments />
-      <QuickActions />
+      {/* <QuickActions /> */}
     </div>
   );
 }

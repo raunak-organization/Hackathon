@@ -1,27 +1,30 @@
 import client from '@/lib/client';
-import { CreateProjectInput } from '@repo/zod-config';
 import {
   CreateProjectResponse,
   GetProjectDeploymentsResponse,
   GetProjectsResponse,
 } from '../types';
 
-export const createProject = async (data: CreateProjectInput) => {
-  const response = await client.post<CreateProjectResponse>(
-    '/api/projects',
-    data,
-  );
-  return response.data;
+const BASE = '/api/projects';
+
+export const getProjects = async (): Promise<GetProjectsResponse> => {
+  const { data } = await client.get<GetProjectsResponse>(BASE);
+  return data;
 };
 
-export const getProjects = async () => {
-  const response = await client.get<GetProjectsResponse>('/api/projects');
-  return response.data;
+export const createProject = async (payload: {
+  name: string;
+  repoUrl: string;
+}): Promise<CreateProjectResponse> => {
+  const { data } = await client.post<CreateProjectResponse>(BASE, payload);
+  return data;
 };
 
-export const getProjectDeployments = async (projectId: string) => {
-  const response = await client.get<GetProjectDeploymentsResponse>(
-    `/api/projects/${projectId}/deployments`,
+export const getProjectDeployments = async (
+  projectId: string,
+): Promise<GetProjectDeploymentsResponse> => {
+  const { data } = await client.get<GetProjectDeploymentsResponse>(
+    `${BASE}/${projectId}/deployments`,
   );
-  return response.data;
+  return data;
 };

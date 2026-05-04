@@ -3,6 +3,7 @@ import { runBuild } from '../../services/build.service.js';
 import { ConflictError, NotFoundError } from '../../utils/appError.js';
 import { projectModel } from '../project/project.model.js';
 import { deployModel } from './deploy.model.js';
+import { DeploymentLean, PopulatedProject } from './types/deploy.type.js';
 
 export const deployService = {
   // --- Create a new deployment -------------------
@@ -51,13 +52,19 @@ export const deployService = {
   },
 
   // --- Get all deployments -------------------
-  async getAllDeployment(userId: string) {
+  async getAllDeployment(userId: string, limit = 50) {
     const deployments = await deployModel
       .find({ userId })
-      .populate('projectId', 'name repoUrl')
-      .sort({ createdAt: -1 });
+      .populate<{ projectId: PopulatedProject }>('projectId', 'name repoUrl')
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .lean<DeploymentLean[]>();
 
-    return deployments;
+    return deployments.map((d) => ({
+      ...d,
+      projectName: d.projectId.name,
+      repoUrl: d.projectId.repoUrl,
+    }));
   },
 
   // --- Get all logs -------------------

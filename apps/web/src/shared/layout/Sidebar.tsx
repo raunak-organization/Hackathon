@@ -1,14 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-  LayoutDashboard,
-  GitBranch,
-  Activity,
-  Settings,
-  Database,
-  X,
-} from 'lucide-react';
+import { LayoutDashboard, GitBranch, Activity, X } from 'lucide-react';
 
 interface SidebarProps {
   open: boolean;
@@ -22,8 +15,6 @@ export const Sidebar = ({ open, onClose }: SidebarProps) => {
     { name: 'Overview', href: '/', icon: LayoutDashboard },
     { name: 'Projects', href: '/projects', icon: GitBranch },
     { name: 'Deployments', href: '/deployment', icon: Activity },
-    { name: 'Environments', href: '/environment', icon: Database },
-    { name: 'Settings', href: '/settings', icon: Settings },
   ];
 
   return (
