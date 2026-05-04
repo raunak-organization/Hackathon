@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { asyncHandler } from '../../utils/asyncHandler.js';
 import { userService } from './user.service.js';
-import { env } from '../../config/env.js';
 
 // ------ Update Name -----------------------
 export const updateName = asyncHandler(async (req: Request, res: Response) => {
@@ -42,8 +41,8 @@ export const deleteUser = asyncHandler(async (req: Request, res: Response) => {
 
   res.clearCookie('refreshToken', {
     httpOnly: true,
-    secure: env.NODE_ENV === 'production',
-    sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax',
+    secure: true,
+    sameSite: 'none',
     path: '/',
   });
 

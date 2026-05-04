@@ -10,13 +10,11 @@ import Link from 'next/link';
 import { Button } from '@/shared/ui/Button';
 import axios from 'axios';
 import { FormValues, Props } from '../types';
-import { useRouter } from 'next/navigation';
 
 export default function AuthForm({ type, onSubmit, isLoading }: Props) {
   const isLogin = type === 'login';
 
   const schema = isLogin ? loginUserSchema : registerUserSchema;
-  const router = useRouter();
   const [backendError, setBackendError] = useState<string | null>(null);
 
   const {
@@ -47,8 +45,6 @@ export default function AuthForm({ type, onSubmit, isLoading }: Props) {
           password: data.password,
         });
       }
-      router.refresh();
-      router.push('/');
     } catch (err) {
       let message = 'Something went wrong';
 

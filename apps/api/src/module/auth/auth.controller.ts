@@ -25,8 +25,8 @@ export interface CookieRequest extends Request {
 
 const cookieOptions: CookieOptions = {
   httpOnly: true,
-  secure: env.NODE_ENV === 'production',
-  sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax',
+  secure: true,
+  sameSite: 'none',
   maxAge: 30 * 24 * 60 * 60 * 1000,
   path: '/',
 };
@@ -123,8 +123,8 @@ export const logout = asyncHandler(
 
     res.clearCookie('refreshToken', {
       httpOnly: true,
-      secure: env.NODE_ENV === 'production',
-      sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: true,
+      sameSite: 'none',
       path: '/',
     });
 
@@ -143,8 +143,8 @@ export const getGithubLoginPage = asyncHandler(
 
     res.cookie('github_oauth_state', state, {
       httpOnly: true,
-      secure: env.NODE_ENV === 'production',
-      sameSite: env.NODE_ENV === 'production' ? 'none' : 'lax',
+      secure: true,
+      sameSite: 'none',
     });
 
     res.redirect(url.toString());
@@ -165,8 +165,8 @@ export const githubCallback = asyncHandler(
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      secure: true,
+      sameSite: 'none',
     });
 
     res.redirect(`${env.FRONTEND_URL}/?token=${accessToken}`);
