@@ -8,7 +8,7 @@ import {
   githubCallback,
   getGithubLoginPage,
 } from './auth.controller.js';
-import authMiddleware from '../../middlewares/auth.middleware.js';
+import authMiddleware from '../middlewares/auth.middleware.js';
 
 const authRouter = Router();
 

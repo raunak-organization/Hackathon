@@ -5,7 +5,7 @@ import authRouter from './module/auth/auth.route.js';
 import userRouter from './module/user/user.route.js';
 import deployRouter from './module/deploy/deploy.route.js';
 import projectRouter from './module/project/project.route.js';
-import { errorHandler } from './middlewares/errorHandler.middleware.js';
+import { errorHandler } from './module/middlewares/errorHandler.middleware.js';
 import dashboardRouter from './module/dashboard/dashboard.route.js';
 import staticRouter from './module/static/staticDeploy.route.js';
 

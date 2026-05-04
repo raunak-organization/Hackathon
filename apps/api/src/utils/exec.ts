@@ -8,11 +8,14 @@ export const runCommand = async (
   cwd?: string,
 ): Promise<void> => {
   return new Promise((resolve, reject) => {
+    const needsShell = ['npm', 'pnpm', 'npx'].includes(command);
+
     const child = spawn(command, args, {
       cwd,
       stdio: 'pipe',
-      shell: true, // important for pnpm/vite
-      env: process.env,
+      shell: needsShell,
+      env: { ...process.env },
+      windowsHide: true,
     });
 
     child.stdout.on('data', (data: Buffer) => {

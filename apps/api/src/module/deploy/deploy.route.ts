@@ -9,7 +9,7 @@ import {
   getDeploymentLogs,
   rollbackDeployment,
 } from './deploy.controller.js';
-import authMiddleware from '../../middlewares/auth.middleware.js';
+import authMiddleware from '../middlewares/auth.middleware.js';
 
 const deployRouter = Router();
 

@@ -1,35 +1,23 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Button } from '@/shared/ui/Button';
+import { useGithubLogin } from '../hooks/useGithubLogin';
 
 interface GithubLoginButtonProps {
   text?: string;
-  onClick?: () => void;
 }
 
 export function GithubLoginButton({
   text = 'Continue with GitHub',
-  onClick,
 }: GithubLoginButtonProps) {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleClick = async () => {
-    if (onClick) {
-      onClick();
-      return;
-    }
-
-    setIsLoading(true);
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    setIsLoading(false);
-  };
+  const { handleGithubLogin, isLoading } = useGithubLogin();
 
   return (
     <Button
       variant="secondary"
       fullWidth
-      onClick={handleClick}
+      onClick={handleGithubLogin}
       isLoading={isLoading}
       className="bg-[#0d1117] border border-[#30363d] text-white hover:bg-[#161b22] hover:border-[#8b949e]"
       leftIcon={

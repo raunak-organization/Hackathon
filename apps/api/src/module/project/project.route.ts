@@ -4,7 +4,7 @@ import {
   getProjectDeployments,
   getProjects,
 } from './project.controller.js';
-import authMiddleware from '../../middlewares/auth.middleware.js';
+import authMiddleware from '../middlewares/auth.middleware.js';
 
 const projectRouter = Router();
 

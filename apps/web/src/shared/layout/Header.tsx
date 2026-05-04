@@ -41,7 +41,7 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
       {/* Hamburger — mobile only */}
       <button
         onClick={onMenuClick}
-        className="lg:hidden text-(--text-secondary) hover:text-(--text-primary) flex-shrink-0 transition-colors"
+        className="lg:hidden text-(--text-secondary) hover:text-(--text-primary) shrink-0 transition-colors"
         aria-label="Open menu"
       >
         <Menu size={22} />
@@ -57,7 +57,7 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-3 sm:gap-5 flex-shrink-0">
+      <div className="flex items-center gap-3 sm:gap-5 shrink-0">
         <button className="hidden sm:block text-(--text-secondary) hover:text-(--text-primary) transition-colors">
           <HelpCircle size={20} />
         </button>
